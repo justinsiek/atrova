@@ -43,7 +43,7 @@ export default function Home() {
             {response && (
               <div className="bg-white p-6 rounded-lg shadow-lg">
                 <h2 className="text-xl font-semibold mb-3">Response</h2>
-                <p>{response}</p>
+                <pre>{JSON.stringify(response, null, 2)}</pre>
               </div>
             )}
           </div>
@@ -60,7 +60,7 @@ export default function Home() {
                         <span className="font-bold">Task:</span> {item.task}
                       </p>
                       <p className="mt-1">
-                        <span className="font-bold">Date:</span> {item.date}
+                        <span className="font-bold">Date:</span> {item.timestamp}
                       </p>
                     </li>
                   ))}
