@@ -6,11 +6,12 @@ interface EventProps {
   startTime: string
   endTime: string
   description?: string
-  color: "pink" | "mint" | "blue"
+  color: "pink" | "mint" | "blue" | "purple" | "orange"
   style: {
     top: string
     height: string
     className: string
+    style?: React.CSSProperties
   }
 }
 
@@ -22,7 +23,11 @@ const Event: React.FC<EventProps> = ({
 }) => {
   return (
     <div
-      style={{ top: style.top, height: style.height }}
+      style={{ 
+        top: style.top, 
+        height: style.height,
+        ...style.style
+      }}
       className={style.className}
     >
       <div className="flex flex-col h-full">

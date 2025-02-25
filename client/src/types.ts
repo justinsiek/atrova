@@ -1,0 +1,1 @@
+export type AI_STATUS = 'idle' | 'loading' | 'success' | 'error'; 
