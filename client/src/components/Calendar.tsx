@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react"
 import { Domine } from "next/font/google"
 import EventForm from './EventForm'
-import Event from './calendar/Event'
 import { CalendarToolbar } from './CalendarToolbar' 
 import { AI_STATUS } from '../types'
 import { DaysHeader } from './calendar/DaysHeader'
@@ -12,17 +11,8 @@ import { GridLines } from './calendar/GridLines'
 import { CurrentTimeIndicator } from './calendar/CurrentTimeIndicator'
 import { EventsDisplay } from './calendar/EventsDisplay'
 import { EventDetailsModal } from './calendar/EventDetailsModal'
-
-interface Event {
-  id: string
-  title: string
-  startTime: string
-  endTime: string
-  date: number
-  color: "pink" | "mint" | "blue" | "purple" | "orange"
-  description?: string
-  aiGenerated?: boolean
-}
+import { fetchEvents, createEvent, deleteEvent } from '@/services/api'
+import { EventType } from '@/types'
 
 const HOURS = Array.from({ length: 25 }, (_, i) => {
   if (i === 24) return "00:00"
@@ -46,12 +36,33 @@ interface CalendarProps {
 
 export default function Calendar({ showForm, setShowForm, scheduleWithAI, aiStatus }: CalendarProps) {
   const [currentTime, setCurrentTime] = useState(new Date())
-  const [events, setEvents] = useState<Event[]>([])
+  const [events, setEvents] = useState<EventType[]>([])
   const [view, setView] = useState<'week' | 'day'>('week')
   const [weekOffset, setWeekOffset] = useState(0)
   const [showTimeLabels, setShowTimeLabels] = useState(true)
-  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null)
+  const [selectedEvent, setSelectedEvent] = useState<EventType | null>(null)
   const [showEventDetails, setShowEventDetails] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  // Fetch events on component mount
+  useEffect(() => {
+    const loadEvents = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const data = await fetchEvents();
+        setEvents(data);
+      } catch (error) {
+        setError('Failed to load events. Please try again later.');
+        console.error('Error fetching events:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadEvents();
+  }, []);
 
   // Update current time every minute
   useEffect(() => {
@@ -102,7 +113,7 @@ export default function Calendar({ showForm, setShowForm, scheduleWithAI, aiStat
   }
 
   // Calculate the most recent Monday with week offset
-  const baseDate = new Date(currentTime)
+  const baseDate = new Date()
   baseDate.setDate(baseDate.getDate() + (weekOffset * 7))
   
   const diffToMonday = baseDate.getDay() === 0 ? 6 : baseDate.getDay() - 1
@@ -140,7 +151,7 @@ export default function Calendar({ showForm, setShowForm, scheduleWithAI, aiStat
     }
   }
 
-  const handleAddEvent = (newEventData: {
+  const handleAddEvent = async (newEventData: {
     title: string
     startTime: string
     endTime: string
@@ -148,13 +159,23 @@ export default function Calendar({ showForm, setShowForm, scheduleWithAI, aiStat
     color: "pink" | "mint" | "blue" | "purple" | "orange"
     description?: string
   }) => {
-    const newEventObj = {
-      id: Date.now().toString(),
-      ...newEventData,
-      aiGenerated: false
+    setIsLoading(true);
+    setError(null);
+    try {
+      const newEventObj = {
+        ...newEventData,
+        aiGenerated: false
+      };
+      
+      const response = await createEvent(newEventObj);
+      setEvents((prev) => [...prev, response.event]);
+      scrollToEvent(newEventData.startTime);
+    } catch (error) {
+      setError('Failed to add event. Please try again.');
+      console.error('Error adding event:', error);
+    } finally {
+      setIsLoading(false);
     }
-    setEvents((prev) => [...prev, newEventObj])
-    scrollToEvent(newEventData.startTime)
   }
 
   const getCurrentTimePosition = () => {
@@ -162,14 +183,24 @@ export default function Calendar({ showForm, setShowForm, scheduleWithAI, aiStat
     return (minutesSinceMidnight * 2) + 32 - 10
   }
 
-  const handleEventClick = (event: Event) => {
+  const handleEventClick = (event: EventType) => {
     setSelectedEvent(event)
     setShowEventDetails(true)
   }
 
-  const handleDeleteEvent = (id: string) => {
-    setEvents(prev => prev.filter(event => event.id !== id))
-    setShowEventDetails(false)
+  const handleDeleteEvent = async (id: string) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      await deleteEvent(id);
+      setEvents(prev => prev.filter(event => event.id !== id));
+      setShowEventDetails(false);
+    } catch (error) {
+      setError('Failed to delete event. Please try again.');
+      console.error('Error deleting event:', error);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -186,6 +217,13 @@ export default function Calendar({ showForm, setShowForm, scheduleWithAI, aiStat
         addEvent={() => setShowForm(true)}
         weekOffset={weekOffset}
       />
+      
+      {/* Error message */}
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          {error}
+        </div>
+      )}
       
       {/* Days Header */}
       <DaysHeader calendarDays={calendarDays} />
@@ -206,12 +244,19 @@ export default function Calendar({ showForm, setShowForm, scheduleWithAI, aiStat
               showIndicator={calendarDays.some(day => day.isToday)} 
             />
 
-            {/* Events */}
-            <EventsDisplay 
-              calendarDays={calendarDays}
-              events={events}
-              onEventClick={handleEventClick}
-            />
+            {/* Loading state */}
+            {isLoading && events.length === 0 ? (
+              <div className="col-span-7 flex justify-center items-center mt-10">
+                <div className="text-gray-500">Loading events...</div>
+              </div>
+            ) : (
+              /* Events Display */
+              <EventsDisplay 
+                calendarDays={calendarDays}
+                events={events}
+                onEventClick={handleEventClick}
+              />
+            )}
           </div>
         </div>
       </div>
