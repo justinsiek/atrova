@@ -11,7 +11,6 @@ export default function Page() {
   
   const handleScheduleWithAI = () => {
     setAiStatus('loading');
-    // Simulate AI scheduling
     setTimeout(() => {
       setAiStatus('success');
       setTimeout(() => setAiStatus('idle'), 3000);

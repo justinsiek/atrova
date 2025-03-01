@@ -26,7 +26,11 @@ const Event: React.FC<EventProps> = ({
       style={{ 
         top: style.top, 
         height: style.height,
-        ...style.style
+        ...style.style,
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+        maxWidth: '100%'
       }}
       className={style.className}
     >

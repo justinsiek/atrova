@@ -3,7 +3,7 @@ export const COLORS = {
   // Base colors
   background: "#f8f4ee", // Soft cream background
   paperWhite: "#fcfaf7", // Lighter card backgrounds
-  sidebarBg: "#2C2C2C", // Slate black for sidebar
+  slate: "#2C2C2C", // Slate black for sidebar
   
   // Neutral tones
   darkBrown: "#3a322e", // For text, replaces black

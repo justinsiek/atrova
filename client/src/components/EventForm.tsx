@@ -16,6 +16,7 @@ interface EventFormProps {
     endTime: string
     date: number
     color: "pink" | "mint" | "blue"
+    description?: string
   }) => void
 }
 
@@ -26,6 +27,7 @@ export default function EventForm({ showForm, setShowForm, calendarDays, onAddEv
   const [newDate, setNewDate] = useState(
     calendarDays.find((day) => day.isToday)?.day.toString() || calendarDays[0].day.toString()
   )
+  const [newDescription, setNewDescription] = useState("")
 
   // Helper to compute end time from a start time and a duration
   const calculateEndTime = (startTime: string, duration: number): string => {
@@ -50,12 +52,14 @@ export default function EventForm({ showForm, setShowForm, calendarDays, onAddEv
       endTime: newEndTime,
       date: parseInt(newDate),
       color: "blue",
+      description: newDescription || undefined,
     })
 
     // Reset form
     setNewTitle("")
     setNewStartTime("")
     setNewDuration("")
+    setNewDescription("")
     setNewDate(calendarDays.find((day) => day.isToday)?.day.toString() || calendarDays[0].day.toString())
     setShowForm(false)
   }
@@ -121,6 +125,19 @@ export default function EventForm({ showForm, setShowForm, calendarDays, onAddEv
                 className="mt-1 block w-full border border-[#E2DFD8] rounded-lg p-2.5 bg-white focus:outline-none focus:border-[#2C2C2C] transition-colors duration-200"
               />
             </div>
+          </div>
+          <div className="mb-4">
+            <label htmlFor="description" className="block text-sm font-medium text-[#2C2C2C] mb-2">
+              Description (Optional)
+            </label>
+            <textarea
+              id="description"
+              value={newDescription}
+              onChange={(e) => setNewDescription(e.target.value)}
+              rows={3}
+              className="mt-1 block w-full border border-[#E2DFD8] rounded-lg p-2.5 bg-white focus:outline-none focus:border-[#2C2C2C] transition-colors duration-200 resize-none"
+              placeholder="Add details about this event..."
+            />
           </div>
           <div className="flex justify-end space-x-3">
             <button
