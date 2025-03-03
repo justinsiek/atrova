@@ -43,13 +43,22 @@ export const updateTask = async (id: string, task: any) => {
 };
 
 export const deleteTask = async (id: string) => {
+  console.log(`Deleting task with ID: ${id}`);
   const response = await fetch(`${API_URL}/tasks/${id}`, {
     method: 'DELETE',
   });
+  
+  console.log(`Delete task response status: ${response.status}`);
+  
   if (!response.ok) {
+    const errorText = await response.text();
+    console.error(`Error deleting task: ${errorText}`);
     throw new Error('Failed to delete task');
   }
-  return response.json();
+  
+  const data = await response.json();
+  console.log(`Delete task response data:`, data);
+  return data;
 };
 
 // Event-related API calls
@@ -90,11 +99,20 @@ export const updateEvent = async (id: string, event: any) => {
 };
 
 export const deleteEvent = async (id: string) => {
+  console.log(`Deleting event with ID: ${id}`);
   const response = await fetch(`${API_URL}/events/${id}`, {
     method: 'DELETE',
   });
+  
+  console.log(`Delete event response status: ${response.status}`);
+  
   if (!response.ok) {
+    const errorText = await response.text();
+    console.error(`Error deleting event: ${errorText}`);
     throw new Error('Failed to delete event');
   }
-  return response.json();
+  
+  const data = await response.json();
+  console.log(`Delete event response data:`, data);
+  return data;
 }; 

@@ -131,8 +131,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onNewEvent, scheduleWithAI, aiStatus,
         scheduleWithAI={scheduleWithAI} 
         aiStatus={aiStatus} 
       />
-
-      <hr className="border-t my-4" style={{ borderColor: COLORS.sidebarBorder }} />
+      <hr className="border-t mb-4" style={{ borderColor: COLORS.sidebarBorder }} />
 
       {/* Error message */}
       {error && (
