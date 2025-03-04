@@ -15,7 +15,7 @@ interface EventFormProps {
     startTime: string
     endTime: string
     date: number
-    color: "pink" | "mint" | "blue"
+    color?: "pink" | "mint" | "blue" | "purple" | "orange"
     description?: string
   }) => void
 }
@@ -51,7 +51,6 @@ export default function EventForm({ showForm, setShowForm, calendarDays, onAddEv
       startTime: newStartTime,
       endTime: newEndTime,
       date: parseInt(newDate),
-      color: "blue",
       description: newDescription || undefined,
     })
 

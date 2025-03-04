@@ -32,9 +32,10 @@ interface CalendarProps {
   setShowForm: (show: boolean) => void;
   scheduleWithAI: () => void;
   aiStatus: AI_STATUS;
+  getRandomColor: () => "pink" | "mint" | "blue" | "purple" | "orange";
 }
 
-export default function Calendar({ showForm, setShowForm, scheduleWithAI, aiStatus }: CalendarProps) {
+export default function Calendar({ showForm, setShowForm, scheduleWithAI, aiStatus, getRandomColor }: CalendarProps) {
   const [currentTime, setCurrentTime] = useState(new Date())
   const [events, setEvents] = useState<EventType[]>([])
   const [view, setView] = useState<'week' | 'day'>('week')
@@ -156,7 +157,7 @@ export default function Calendar({ showForm, setShowForm, scheduleWithAI, aiStat
     startTime: string
     endTime: string
     date: number
-    color: "pink" | "mint" | "blue" | "purple" | "orange"
+    color?: "pink" | "mint" | "blue" | "purple" | "orange"
     description?: string
   }) => {
     setIsLoading(true);
@@ -164,6 +165,7 @@ export default function Calendar({ showForm, setShowForm, scheduleWithAI, aiStat
     try {
       const newEventObj = {
         ...newEventData,
+        color: newEventData.color || getRandomColor(),
         aiGenerated: false
       };
       
