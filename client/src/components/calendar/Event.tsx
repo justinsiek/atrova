@@ -19,26 +19,40 @@ const Event: React.FC<EventProps> = ({
   title, 
   startTime, 
   description, 
-  style 
+  style,
+  color 
 }) => {
+  // Get border color based on event color
+  const getBorderColor = () => {
+    if (style.style?.backgroundColor) {
+      // Use a darker border based on the event color
+      switch (color) {
+        case 'pink': return '#e3b3ac';
+        case 'mint': return '#bacbb7';
+        case 'blue': return '#b6cede';
+        case 'purple': return '#c9b8d9';
+        case 'orange': return '#e7c3a7';
+        default: return '#d6cebf'; // Default to borderMedium
+      }
+    }
+    return undefined;
+  };
+
   return (
     <div
       style={{ 
         top: style.top, 
         height: style.height,
         ...style.style,
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        whiteSpace: 'nowrap',
-        maxWidth: '100%'
+        borderColor: getBorderColor(),
       }}
-      className={style.className}
+      className={`${style.className} overflow-hidden rounded-lg shadow-sm hover:shadow-md transition-all duration-200 border-2 border-solid`}
     >
-      <div className="flex flex-col h-full">
-        <div className="text-xs text-gray-500 mb-1">{startTime}</div>
-        <div className="font-medium text-sm">{title}</div>
+      <div className="flex flex-col h-full px-0.5 ">
+        <div className="text-xs text-gray-500 truncate">{startTime}</div>
+        <div className="font-bold text-sm truncate">{title}</div>
         {description && (
-          <div className="text-xs text-gray-500 mt-1">{description}</div>
+          <div className="text-xs text-gray-500 mt-1 line-clamp-2 overflow-hidden">{description}</div>
         )}
       </div>
     </div>
