@@ -23,12 +23,12 @@ export const COLORS = {
   accent4: "#ddbea9", // Dusty peach
   accent5: "#ffe8d6", // Light peach
   
-  // Updated Event colors - softer, more cohesive palette
-  eventPink: "#f7e4e1",    // Soft dusty rose
-  eventMint: "#e6ede5",    // Subtle sage
-  eventBlue: "#e4e9ec",    // Pale blue-gray
-  eventPurple: "#e9e4ec",  // Soft lavender
-  eventOrange: "#f4eae1",  // Warm cream
+  // Updated Event colors - warmer, more vibrant palette
+  eventPink: "#f5d6d1",    // Warmer dusty rose
+  eventMint: "#d8e8d5",    // More vibrant sage
+  eventBlue: "#d6e5f0",    // Warmer sky blue
+  eventPurple: "#e2d7ec",  // Richer lavender
+  eventOrange: "#f7dcc7",  // Warmer peach
   
   // Utility
   success: "#7d9e7f",

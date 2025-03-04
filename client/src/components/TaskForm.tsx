@@ -42,7 +42,7 @@ const TaskForm = ({ showForm, setShowForm, onAddTask }: TaskFormProps) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-[50]">
       <div 
-        className="p-8 rounded-lg shadow-lg w-96"
+        className="p-8 rounded-lg shadow-lg w-[480px]"
         style={{ backgroundColor: COLORS.paperWhite, border: `1px solid ${COLORS.borderLight}` }}
       >
         <h2 
@@ -88,7 +88,7 @@ const TaskForm = ({ showForm, setShowForm, onAddTask }: TaskFormProps) => {
                 onClick={() => setPriority('low')}
                 className={`text-sm py-2 px-3 rounded-md transition-colors`}
                 style={{
-                  backgroundColor: priority === 'low' ? COLORS.info : COLORS.accent5,
+                  backgroundColor: priority === 'low' ? COLORS.info : COLORS.borderLight,
                   color: priority === 'low' ? 'white' : COLORS.darkBrown,
                   border: `1px solid ${priority === 'low' ? COLORS.info : COLORS.borderLight}`
                 }}
@@ -100,7 +100,7 @@ const TaskForm = ({ showForm, setShowForm, onAddTask }: TaskFormProps) => {
                 onClick={() => setPriority('medium')}
                 className={`text-sm py-2 px-3 rounded-md transition-colors`}
                 style={{
-                  backgroundColor: priority === 'medium' ? COLORS.warning : COLORS.accent5,
+                  backgroundColor: priority === 'medium' ? COLORS.warning : COLORS.borderLight,
                   color: priority === 'medium' ? 'white' : COLORS.darkBrown,
                   border: `1px solid ${priority === 'medium' ? COLORS.warning : COLORS.borderLight}`
                 }}
@@ -112,7 +112,7 @@ const TaskForm = ({ showForm, setShowForm, onAddTask }: TaskFormProps) => {
                 onClick={() => setPriority('high')}
                 className={`text-sm py-2 px-3 rounded-md transition-colors`}
                 style={{
-                  backgroundColor: priority === 'high' ? COLORS.error : COLORS.accent5,
+                  backgroundColor: priority === 'high' ? COLORS.error : COLORS.borderLight,
                   color: priority === 'high' ? 'white' : COLORS.darkBrown,
                   border: `1px solid ${priority === 'high' ? COLORS.error : COLORS.borderLight}`
                 }}
@@ -122,48 +122,50 @@ const TaskForm = ({ showForm, setShowForm, onAddTask }: TaskFormProps) => {
             </div>
           </div>
 
-          <div className="mb-6">
-            <label 
-              htmlFor="dueDate" 
-              className="block text-sm font-medium mb-2"
-              style={{ color: COLORS.darkBrown }}
-            >
-              Due Date (Optional)
-            </label>
-            <input
-              id="dueDate"
-              type="date"
-              value={dueDate}
-              onChange={(e) => setDueDate(e.target.value)}
-              className="mt-1 block w-full border rounded-lg p-3 bg-white focus:outline-none transition-colors duration-200"
-              style={{ 
-                borderColor: COLORS.borderMedium,
-                color: COLORS.darkBrown
-              }}
-            />
-          </div>
+          <div className="grid grid-cols-2 gap-4 mb-6">
+          
+          <div>
+              <label 
+                htmlFor="duration" 
+                className="block text-sm font-medium mb-2"
+                style={{ color: COLORS.darkBrown }}
+              >
+                Duration (minutes)
+              </label>
+              <input
+                id="duration"
+                type="number"
+                min="1"
+                value={duration}
+                onChange={(e) => setDuration(e.target.value)}
+                className="mt-1 block w-full border rounded-lg p-3 bg-white focus:outline-none transition-colors duration-200"
+                style={{ 
+                  borderColor: COLORS.borderMedium,
+                  color: COLORS.darkBrown
+                }}
+              />
+            </div>
+            <div>
+              <label 
+                htmlFor="dueDate" 
+                className="block text-sm font-medium mb-2"
+                style={{ color: COLORS.darkBrown }}
+              >
+                Due Date (Optional)
+              </label>
+              <input
+                id="dueDate"
+                type="date"
+                value={dueDate}
+                onChange={(e) => setDueDate(e.target.value)}
+                className="mt-1 block w-full border rounded-lg p-3 bg-white focus:outline-none transition-colors duration-200"
+                style={{ 
+                  borderColor: COLORS.borderMedium,
+                  color: COLORS.darkBrown
+                }}
+              />
+            </div>
 
-          <div className="mb-4">
-            <label 
-              htmlFor="duration" 
-              className="block text-sm font-medium mb-2"
-              style={{ color: COLORS.darkBrown }}
-            >
-              Duration (minutes)
-            </label>
-            <input
-              id="duration"
-              type="number"
-              min="1"
-              value={duration}
-              onChange={(e) => setDuration(e.target.value)}
-              className="mt-1 block w-full border rounded-lg p-3 bg-white focus:outline-none transition-colors duration-200"
-              style={{ 
-                borderColor: COLORS.borderMedium,
-                color: COLORS.darkBrown
-              }}
-              placeholder="How long will this task take?"
-            />
           </div>
 
           <div className="flex justify-end space-x-3">
@@ -181,7 +183,7 @@ const TaskForm = ({ showForm, setShowForm, onAddTask }: TaskFormProps) => {
             <button
               type="submit"
               className="px-6 py-3 rounded-lg transition-colors duration-200 focus:outline-none text-white"
-              style={{ backgroundColor: COLORS.accent2 }}
+              style={{ backgroundColor: COLORS.slate }}
             >
               Add Task
             </button>
