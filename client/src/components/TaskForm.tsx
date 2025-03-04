@@ -8,6 +8,7 @@ interface TaskFormProps {
     title: string
     priority?: 'low' | 'medium' | 'high'
     dueDate?: string
+    duration?: number
   }) => void
 }
 
@@ -15,6 +16,7 @@ const TaskForm = ({ showForm, setShowForm, onAddTask }: TaskFormProps) => {
   const [title, setTitle] = useState("")
   const [priority, setPriority] = useState<'low' | 'medium' | 'high' | ''>('')
   const [dueDate, setDueDate] = useState("")
+  const [duration, setDuration] = useState("")
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -23,13 +25,15 @@ const TaskForm = ({ showForm, setShowForm, onAddTask }: TaskFormProps) => {
     onAddTask({ 
       title: title.trim(),
       priority: priority || undefined,
-      dueDate: dueDate || undefined
+      dueDate: dueDate || undefined,
+      duration: duration ? parseInt(duration) : undefined
     })
     
     // Reset form
     setTitle("")
     setPriority("")
     setDueDate("")
+    setDuration("")
     setShowForm(false)
   }
 
@@ -136,6 +140,29 @@ const TaskForm = ({ showForm, setShowForm, onAddTask }: TaskFormProps) => {
                 borderColor: COLORS.borderMedium,
                 color: COLORS.darkBrown
               }}
+            />
+          </div>
+
+          <div className="mb-4">
+            <label 
+              htmlFor="duration" 
+              className="block text-sm font-medium mb-2"
+              style={{ color: COLORS.darkBrown }}
+            >
+              Duration (minutes)
+            </label>
+            <input
+              id="duration"
+              type="number"
+              min="1"
+              value={duration}
+              onChange={(e) => setDuration(e.target.value)}
+              className="mt-1 block w-full border rounded-lg p-3 bg-white focus:outline-none transition-colors duration-200"
+              style={{ 
+                borderColor: COLORS.borderMedium,
+                color: COLORS.darkBrown
+              }}
+              placeholder="How long will this task take?"
             />
           </div>
 

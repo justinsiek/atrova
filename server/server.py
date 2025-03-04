@@ -56,7 +56,8 @@ def map_event_fields_to_camel_case(event_data):
 def map_task_fields(task_data):
     """Maps camelCase frontend fields to snake_case database fields"""
     field_mapping = {
-        'dueDate': 'due_date'
+        'dueDate': 'due_date',
+        # No need to map 'duration' as it's the same in both cases
     }
     
     mapped_task = {}
@@ -69,7 +70,8 @@ def map_task_fields(task_data):
 def map_task_fields_to_camel_case(task_data):
     """Maps snake_case database fields to camelCase frontend fields"""
     field_mapping = {
-        'due_date': 'dueDate'
+        'due_date': 'dueDate',
+        # No need to map 'duration' as it's the same in both cases
     }
     
     mapped_task = {}

@@ -5,4 +5,5 @@ export interface Task {
   aiScheduled?: boolean;
   dueDate?: string;
   priority?: 'low' | 'medium' | 'high';
+  duration?: number; // Duration in minutes
 } 

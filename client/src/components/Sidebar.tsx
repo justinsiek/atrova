@@ -46,7 +46,8 @@ const Sidebar: React.FC<SidebarProps> = ({ onNewEvent, scheduleWithAI, aiStatus,
   const handleAddTask = async (task: { 
     title: string, 
     priority?: 'low' | 'medium' | 'high',
-    dueDate?: string 
+    dueDate?: string,
+    duration?: number  // Add duration here
   }) => {
     setIsLoading(true);
     setError(null);
@@ -55,7 +56,8 @@ const Sidebar: React.FC<SidebarProps> = ({ onNewEvent, scheduleWithAI, aiStatus,
         title: task.title,
         completed: false,
         priority: task.priority,
-        dueDate: task.dueDate
+        dueDate: task.dueDate,
+        duration: task.duration  // Add duration here
       };
       
       const response = await createTask(newTask);
