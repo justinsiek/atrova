@@ -105,13 +105,29 @@ const Sidebar: React.FC<SidebarProps> = ({ onNewEvent, scheduleWithAI, aiStatus,
   };
 
   const filteredTasks = tasks.filter(task => {
-    // First filter by completion status
+    // First filter by completion status and priority
     if (!showCompleted && task.completed) return false;
     
     // Then filter by priority if needed
     if (filter !== 'all' && task.priority !== filter) return false;
     
     return true;
+  }).sort((a, b) => {
+    // First sort by deadline (if available)
+    if (a.dueDate && b.dueDate) {
+      return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+    } else if (a.dueDate) {
+      return -1; // a has dueDate, b doesn't, so a comes first
+    } else if (b.dueDate) {
+      return 1; // b has dueDate, a doesn't, so b comes first
+    }
+    
+    // Then sort by priority (high > medium > low)
+    const priorityOrder = { high: 0, medium: 1, low: 2, undefined: 3 };
+    const aPriority = a.priority || 'undefined';
+    const bPriority = b.priority || 'undefined';
+    
+    return priorityOrder[aPriority] - priorityOrder[bPriority];
   });
 
   const totalTasks = tasks.length;

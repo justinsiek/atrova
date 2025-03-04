@@ -32,7 +32,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
   
   return (
     <div 
-      className={`p-3 rounded-md shadow-sm relative ${completed ? 'opacity-70' : ''} flex`}
+      className={`p-3 rounded-md shadow-sm relative ${completed ? 'opacity-70' : ''} flex items-start`}
       style={{ backgroundColor: '#333232', border: `1px solid ${COLORS.sidebarBorder}` }}
     >
       {/* Priority indicator */}
@@ -44,10 +44,10 @@ const TaskCard: React.FC<TaskCardProps> = ({
         }}
       ></div>
       
-      {/* Checkbox */}
+      {/* Checkbox - now properly centered */}
       <button
         onClick={() => onToggleComplete(id)}
-        className="shrink-0 w-5 h-5 rounded border flex items-center justify-center mr-3 mt-0.5"
+        className="shrink-0 w-5 h-5 rounded border flex items-center justify-center mr-3 self-center"
         style={{
           backgroundColor: completed ? COLORS.success : 'transparent',
           borderColor: completed ? COLORS.success : COLORS.sidebarText,
@@ -60,10 +60,10 @@ const TaskCard: React.FC<TaskCardProps> = ({
       </button>
       
       {/* Content */}
-      <div className="flex-1">
+      <div className="flex flex-col flex-grow">
         <div className="flex justify-between">
           <h3 
-            className={`text-sm font-medium mb-1 ${completed ? 'line-through opacity-70' : ''}`}
+            className={`text-sm font-medium ${completed ? 'line-through opacity-70' : ''}`}
             style={{ color: COLORS.sidebarText }}
           >
             {title}
@@ -79,7 +79,20 @@ const TaskCard: React.FC<TaskCardProps> = ({
           </button>
         </div>
         
-        <div className="flex items-center text-xs mt-2">
+        {/* Info row - always show duration if available, and due date when needed */}
+        <div className="flex items-center text-xs mt-1">
+          {duration && (
+            <div 
+              className="flex items-center opacity-60 mr-3"
+              style={{ color: COLORS.sidebarText }}
+            >
+              <svg className="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              {duration}m
+            </div>
+          )}
+          
           {dueDate && (
             <div 
               className="flex items-center opacity-60 mr-3"
@@ -101,18 +114,6 @@ const TaskCard: React.FC<TaskCardProps> = ({
                 <path d="M9 12L11 14L15 10M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
               Scheduled
-            </div>
-          )}
-          
-          {duration && (
-            <div 
-              className="flex items-center opacity-60 mr-3"
-              style={{ color: COLORS.sidebarText }}
-            >
-              <svg className="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-              {duration} min
             </div>
           )}
         </div>
