@@ -15,11 +15,16 @@ interface EventFormProps {
     title: string
     startTime: string
     endTime: string
-    date: number
+    date?: number
     color?: "pink" | "mint" | "blue" | "purple" | "orange"
     description?: string
+    isRecurring?: boolean
+    recurringDays?: string
+    recurringEndDate?: string
   }) => void
 }
+
+const WEEKDAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
 export default function EventForm({ showForm, setShowForm, calendarDays, onAddEvent }: EventFormProps) {
   const [newTitle, setNewTitle] = useState("")
@@ -30,6 +35,9 @@ export default function EventForm({ showForm, setShowForm, calendarDays, onAddEv
   )
   const [newDescription, setNewDescription] = useState("")
   const [selectedColor, setSelectedColor] = useState<"pink" | "mint" | "blue" | "purple" | "orange">("blue")
+  const [isRecurring, setIsRecurring] = useState(false)
+  const [selectedDays, setSelectedDays] = useState<boolean[]>(Array(7).fill(false))
+  const [recurringEndDate, setRecurringEndDate] = useState("")
 
   // Helper to compute end time from a start time and a duration
   const calculateEndTime = (startTime: string, duration: number): string => {
@@ -38,6 +46,16 @@ export default function EventForm({ showForm, setShowForm, calendarDays, onAddEv
     const endHour = Math.floor(totalMinutes / 60)
     const endMinute = totalMinutes % 60
     return `${endHour.toString().padStart(2, "0")}:${endMinute.toString().padStart(2, "0")}`
+  }
+
+  const handleDayToggle = (index: number) => {
+    const newSelectedDays = [...selectedDays]
+    newSelectedDays[index] = !newSelectedDays[index]
+    setSelectedDays(newSelectedDays)
+  }
+
+  const getBinaryDays = (): string => {
+    return selectedDays.map(day => day ? "1" : "0").join("")
   }
 
   const handleAddEvent = (e: React.FormEvent<HTMLFormElement>) => {
@@ -52,9 +70,12 @@ export default function EventForm({ showForm, setShowForm, calendarDays, onAddEv
       title: newTitle,
       startTime: newStartTime,
       endTime: newEndTime,
-      date: parseInt(newDate),
+      date: isRecurring ? undefined : parseInt(newDate),
       description: newDescription || undefined,
-      color: selectedColor
+      color: selectedColor,
+      isRecurring,
+      recurringDays: isRecurring ? getBinaryDays() : undefined,
+      recurringEndDate: isRecurring ? recurringEndDate || undefined : undefined
     })
 
     // Reset form
@@ -63,6 +84,9 @@ export default function EventForm({ showForm, setShowForm, calendarDays, onAddEv
     setNewDuration("")
     setNewDescription("")
     setSelectedColor("blue")
+    setIsRecurring(false)
+    setSelectedDays(Array(7).fill(false))
+    setRecurringEndDate("")
     setNewDate(calendarDays.find((day) => day.isToday)?.day.toString() || calendarDays[0].day.toString())
     setShowForm(false)
   }
@@ -72,7 +96,18 @@ export default function EventForm({ showForm, setShowForm, calendarDays, onAddEv
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-[#2C2C2C] bg-opacity-50 z-[50]">
       <div className="bg-[#FAF9F6] p-6 rounded-lg shadow-lg w-[480px] border border-[#E2DFD8]">
-        <h2 className="text-2xl font-bold text-[#2C2C2C] mb-4">Add Event</h2>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-bold text-[#2C2C2C]">Add Event</h2>
+          <label className="flex items-center space-x-2 cursor-pointer">
+            <span className="text-sm text-[#2C2C2C]">Recurring</span>
+            <input
+              type="checkbox"
+              checked={isRecurring}
+              onChange={(e) => setIsRecurring(e.target.checked)}
+              className="form-checkbox h-4 w-4 text-[#2C2C2C]"
+            />
+          </label>
+        </div>
         <form onSubmit={handleAddEvent}>
           <div className="mb-4">
             <label htmlFor="title" className="block text-sm font-medium text-[#2C2C2C] mb-2">
@@ -87,23 +122,47 @@ export default function EventForm({ showForm, setShowForm, calendarDays, onAddEv
             />
           </div>
           <div className="grid grid-cols-3 gap-4 mb-5">
-            <div>
-              <label htmlFor="date" className="block text-sm font-medium text-[#2C2C2C] mb-2">
-                Day
-              </label>
-              <select
-                id="date"
-                value={newDate}
-                onChange={(e) => setNewDate(e.target.value)}
-                className="mt-1 block w-full border border-[#E2DFD8] rounded-lg p-2.5 bg-white focus:outline-none focus:border-[#2C2C2C] transition-colors duration-200"
-              >
-                {calendarDays.map((day) => (
-                  <option key={day.day} value={day.day}>
-                    {day.weekday} {day.day}
-                  </option>
-                ))}
-              </select>
-            </div>
+            {!isRecurring ? (
+              <div>
+                <label htmlFor="date" className="block text-sm font-medium text-[#2C2C2C] mb-2">
+                  Day
+                </label>
+                <select
+                  id="date"
+                  value={newDate}
+                  onChange={(e) => setNewDate(e.target.value)}
+                  className="mt-1 block w-full border border-[#E2DFD8] rounded-lg p-2.5 bg-white focus:outline-none focus:border-[#2C2C2C] transition-colors duration-200"
+                >
+                  {calendarDays.map((day) => (
+                    <option key={day.day} value={day.day}>
+                      {day.weekday} {day.day}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ) : (
+              <div className="col-span-3">
+                <label className="block text-sm font-medium text-[#2C2C2C] mb-2">
+                  Recurring Days
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {WEEKDAYS.map((day, index) => (
+                    <button
+                      key={day}
+                      type="button"
+                      onClick={() => handleDayToggle(index)}
+                      className={`px-2 py-1 rounded-md text-sm ${
+                        selectedDays[index]
+                          ? "bg-[#2C2C2C] text-white"
+                          : "bg-[#E2DFD8] text-[#2C2C2C]"
+                      }`}
+                    >
+                      {day.slice(0, 3)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
             <div>
               <label htmlFor="startTime" className="block text-sm font-medium text-[#2C2C2C] mb-2">
                 Start Time
@@ -129,6 +188,20 @@ export default function EventForm({ showForm, setShowForm, calendarDays, onAddEv
               />
             </div>
           </div>
+          {isRecurring && (
+            <div className="mb-4">
+              <label htmlFor="endDate" className="block text-sm font-medium text-[#2C2C2C] mb-2">
+                End Date (Optional)
+              </label>
+              <input
+                type="date"
+                id="endDate"
+                value={recurringEndDate}
+                onChange={(e) => setRecurringEndDate(e.target.value)}
+                className="mt-1 block w-full border border-[#E2DFD8] rounded-lg p-2.5 bg-white focus:outline-none focus:border-[#2C2C2C] transition-colors duration-200"
+              />
+            </div>
+          )}
           <div className="mb-4">
             <label htmlFor="description" className="block text-sm font-medium text-[#2C2C2C] mb-2">
               Description (Optional)

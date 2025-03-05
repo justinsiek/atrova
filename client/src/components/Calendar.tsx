@@ -153,20 +153,27 @@ export default function Calendar({ showForm, setShowForm, scheduleWithAI, aiStat
   }
 
   const handleAddEvent = async (newEventData: {
-    title: string
-    startTime: string
-    endTime: string
-    date: number
-    color?: "pink" | "mint" | "blue" | "purple" | "orange"
-    description?: string
+    title: string;
+    startTime: string;
+    endTime: string;
+    date?: number;
+    color?: "pink" | "mint" | "blue" | "purple" | "orange";
+    description?: string;
+    isRecurring?: boolean;
+    recurringDays?: string;
+    recurringEndDate?: string;
   }) => {
     setIsLoading(true);
     setError(null);
     try {
       const newEventObj = {
         ...newEventData,
+        date: newEventData.date || calendarDays[0].day,
         color: newEventData.color || getRandomColor(),
-        aiGenerated: false
+        aiGenerated: false,
+        isRecurring: newEventData.isRecurring || false,
+        recurringDays: newEventData.recurringDays || null,
+        recurringEndDate: newEventData.recurringEndDate || null
       };
       
       const response = await createEvent(newEventObj);

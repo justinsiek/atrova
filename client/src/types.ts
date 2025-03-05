@@ -9,6 +9,9 @@ export interface EventType {
   color: "pink" | "mint" | "blue" | "purple" | "orange";
   description?: string;
   aiGenerated?: boolean;
+  isRecurring: boolean;
+  recurringDays: string | null;
+  recurringEndDate: string | null;
 }
 
 export interface Day {

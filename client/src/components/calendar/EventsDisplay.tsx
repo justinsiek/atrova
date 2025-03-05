@@ -46,22 +46,35 @@ export const EventsDisplay: React.FC<EventsDisplayProps> = ({
     };
   };
 
+  const shouldShowEvent = (event: EventType, day: Day) => {
+    if (!event.isRecurring) {
+      return event.date === day.day;
+    }
+
+    // For recurring events
+    const dayDate = new Date(day.year, day.month, day.day);
+    
+    // Check if event has ended
+    if (event.recurringEndDate && dayDate > new Date(event.recurringEndDate)) {
+      return false;
+    }
+
+    // Get day of week (0 = Monday, 6 = Sunday)
+    const weekday = dayDate.getDay();
+    const adjustedWeekday = weekday === 0 ? 6 : weekday - 1;
+
+    return event.recurringDays?.[adjustedWeekday] === '1';
+  };
+
   return (
     <>
       {calendarDays.map((day) => (
         <div key={day.day} className="relative h-[2880px]">
           {events
-            .filter((event) => {
-              // Find events that match this day's date
-              const eventDate = new Date(day.year, day.month, event.date);
-              const dayDate = new Date(day.year, day.month, day.day);
-              return eventDate.getDate() === dayDate.getDate() &&
-                     eventDate.getMonth() === dayDate.getMonth() &&
-                     eventDate.getFullYear() === dayDate.getFullYear();
-            })
+            .filter((event) => shouldShowEvent(event, day))
             .map((event) => (
               <div 
-                key={event.id} 
+                key={`${event.id}-${day.day}`}
                 onClick={() => onEventClick(event)}
                 className="cursor-pointer"
               >
