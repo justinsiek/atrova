@@ -166,6 +166,8 @@ export default function Calendar({ showForm, setShowForm, scheduleWithAI, aiStat
     setIsLoading(true);
     setError(null);
     try {
+      console.log('handleAddEvent called with data:', newEventData);
+      
       const newEventObj = {
         ...newEventData,
         date: newEventData.date || calendarDays[0].day,
@@ -176,8 +178,26 @@ export default function Calendar({ showForm, setShowForm, scheduleWithAI, aiStat
         recurringEndDate: newEventData.recurringEndDate || null
       };
       
+      console.log('Sending new event to API:', newEventObj);
+      
+      // For debugging - immediately display without waiting for API
+      const tempId = `temp-${Date.now()}`;
+      const tempEvent = {
+        ...newEventObj,
+        id: tempId
+      };
+      
+      // Add immediately to UI for responsive feel
+      setEvents(prev => [...prev, tempEvent as EventType]);
+      
+      // Then update with actual API result
       const response = await createEvent(newEventObj);
-      setEvents((prev) => [...prev, response.event]);
+      
+      // Replace temp event with real one from API
+      setEvents(prev => prev.map(event => 
+        event.id === tempId ? response.event : event
+      ));
+      
       scrollToEvent(newEventData.startTime);
     } catch (error) {
       setError('Failed to add event. Please try again.');
@@ -264,6 +284,19 @@ export default function Calendar({ showForm, setShowForm, scheduleWithAI, aiStat
                 calendarDays={calendarDays}
                 events={events}
                 onEventClick={handleEventClick}
+                onEventAdd={(newEvent) => {
+                  handleAddEvent({
+                    title: newEvent.title,
+                    startTime: newEvent.startTime,
+                    endTime: newEvent.endTime,
+                    date: newEvent.date,
+                    color: newEvent.color,
+                    description: newEvent.description,
+                    isRecurring: newEvent.isRecurring,
+                    recurringDays: newEvent.recurringDays || undefined,
+                    recurringEndDate: newEvent.recurringEndDate || undefined
+                  });
+                }}
               />
             )}
           </div>
