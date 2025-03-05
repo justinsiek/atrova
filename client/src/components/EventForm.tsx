@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { COLORS } from "@/constants/colors"
 
 interface CalendarDay {
   day: number
@@ -28,6 +29,7 @@ export default function EventForm({ showForm, setShowForm, calendarDays, onAddEv
     calendarDays.find((day) => day.isToday)?.day.toString() || calendarDays[0].day.toString()
   )
   const [newDescription, setNewDescription] = useState("")
+  const [selectedColor, setSelectedColor] = useState<"pink" | "mint" | "blue" | "purple" | "orange">("blue")
 
   // Helper to compute end time from a start time and a duration
   const calculateEndTime = (startTime: string, duration: number): string => {
@@ -52,6 +54,7 @@ export default function EventForm({ showForm, setShowForm, calendarDays, onAddEv
       endTime: newEndTime,
       date: parseInt(newDate),
       description: newDescription || undefined,
+      color: selectedColor
     })
 
     // Reset form
@@ -59,6 +62,7 @@ export default function EventForm({ showForm, setShowForm, calendarDays, onAddEv
     setNewStartTime("")
     setNewDuration("")
     setNewDescription("")
+    setSelectedColor("blue")
     setNewDate(calendarDays.find((day) => day.isToday)?.day.toString() || calendarDays[0].day.toString())
     setShowForm(false)
   }
@@ -138,6 +142,43 @@ export default function EventForm({ showForm, setShowForm, calendarDays, onAddEv
               placeholder="Add details about this event..."
             />
           </div>
+          <div className="mb-5">
+            <label className="block text-sm font-medium text-[#2C2C2C] mb-2">
+              Color
+            </label>
+            <div className="flex gap-3">
+              <ColorOption 
+                color="pink" 
+                bgColor={COLORS.eventPink} 
+                selectedColor={selectedColor} 
+                onSelect={setSelectedColor} 
+              />
+              <ColorOption 
+                color="mint" 
+                bgColor={COLORS.eventMint} 
+                selectedColor={selectedColor} 
+                onSelect={setSelectedColor} 
+              />
+              <ColorOption 
+                color="blue" 
+                bgColor={COLORS.eventBlue} 
+                selectedColor={selectedColor} 
+                onSelect={setSelectedColor} 
+              />
+              <ColorOption 
+                color="purple" 
+                bgColor={COLORS.eventPurple} 
+                selectedColor={selectedColor} 
+                onSelect={setSelectedColor} 
+              />
+              <ColorOption 
+                color="orange" 
+                bgColor={COLORS.eventOrange} 
+                selectedColor={selectedColor} 
+                onSelect={setSelectedColor} 
+              />
+            </div>
+          </div>
           <div className="flex justify-end space-x-3">
             <button
               type="button"
@@ -156,5 +197,27 @@ export default function EventForm({ showForm, setShowForm, calendarDays, onAddEv
         </form>
       </div>
     </div>
+  )
+}
+
+interface ColorOptionProps {
+  color: "pink" | "mint" | "blue" | "purple" | "orange"
+  bgColor: string
+  selectedColor: string
+  onSelect: (color: "pink" | "mint" | "blue" | "purple" | "orange") => void
+}
+
+function ColorOption({ color, bgColor, selectedColor, onSelect }: ColorOptionProps) {
+  return (
+    <button
+      type="button"
+      onClick={() => onSelect(color)}
+      className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
+        selectedColor === color ? "ring-2 ring-[#2C2C2C]" : ""
+      }`}
+      style={{ backgroundColor: bgColor }}
+    >
+
+    </button>
   )
 }
