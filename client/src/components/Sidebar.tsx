@@ -14,9 +14,10 @@ interface SidebarProps {
   scheduleWithAI: () => void;
   aiStatus: 'idle' | 'loading' | 'success' | 'error';
   unscheduledTasks: number;
+  getRandomColor: () => "pink" | "mint" | "blue" | "purple" | "orange";
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ onNewEvent, scheduleWithAI, aiStatus, unscheduledTasks }) => {
+const Sidebar: React.FC<SidebarProps> = ({ onNewEvent, scheduleWithAI, aiStatus, unscheduledTasks, getRandomColor }) => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [showCompleted, setShowCompleted] = useState(false);
@@ -187,6 +188,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onNewEvent, scheduleWithAI, aiStatus,
           showCompleted={showCompleted}
           handleToggleComplete={handleToggleComplete}
           handleDeleteTask={handleDeleteTask}
+          getRandomColor={getRandomColor}
         />
       )}
 

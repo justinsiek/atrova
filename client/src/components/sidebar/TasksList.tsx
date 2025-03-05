@@ -10,6 +10,7 @@ interface Task {
   aiScheduled?: boolean;
   dueDate?: string;
   priority?: 'low' | 'medium' | 'high';
+  duration?: number;
 }
 
 interface TasksListProps {
@@ -20,6 +21,7 @@ interface TasksListProps {
   showCompleted: boolean;
   handleToggleComplete: (taskId: string) => void;
   handleDeleteTask: (taskId: string) => void;
+  getRandomColor: () => "pink" | "mint" | "blue" | "purple" | "orange";
 }
 
 const TasksList: React.FC<TasksListProps> = ({ 
@@ -29,7 +31,8 @@ const TasksList: React.FC<TasksListProps> = ({
   totalTasks, 
   showCompleted, 
   handleToggleComplete, 
-  handleDeleteTask 
+  handleDeleteTask,
+  getRandomColor
 }) => {
   return (
     <div className="flex-1 overflow-y-auto scrollbar-hide space-y-2">
@@ -41,6 +44,7 @@ const TasksList: React.FC<TasksListProps> = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.2 }}
+            className="cursor-grab"
           >
             <TaskCard 
               title={task.title} 
@@ -51,6 +55,8 @@ const TasksList: React.FC<TasksListProps> = ({
               aiScheduled={task.aiScheduled}
               dueDate={task.dueDate}
               priority={task.priority}
+              duration={task.duration}
+              getRandomColor={getRandomColor}
             />
           </motion.div>
         ))}

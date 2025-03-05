@@ -103,9 +103,22 @@ export const EventsDisplay: React.FC<EventsDisplayProps> = ({
     e.preventDefault();
     
     try {
+      // Get task data
+      const taskData = extractTaskData(e.dataTransfer);
+      
+      if (!taskData) {
+        console.error('No valid task data found in drop');
+        return;
+      }
+
       // Get the drop position (time) based on Y coordinate
       const dropRect = e.currentTarget.getBoundingClientRect();
-      const dropY = e.clientY - dropRect.top;
+      let dropY = e.clientY - dropRect.top;
+      
+      // Adjust for the drag offset if it was provided
+      if (taskData.dragOffset?.y) {
+        dropY -= taskData.dragOffset.y;
+      }
       
       // Calculate the time (in minutes since start of day)
       const minutesSinceMidnight = Math.floor(dropY / 2);
@@ -114,14 +127,6 @@ export const EventsDisplay: React.FC<EventsDisplayProps> = ({
       
       // Format as HH:MM
       const startTime = `${String(dropHour).padStart(2, '0')}:${String(dropMinute).padStart(2, '0')}`;
-      
-      // Get task data
-      const taskData = extractTaskData(e.dataTransfer);
-      
-      if (!taskData) {
-        console.error('No valid task data found in drop');
-        return;
-      }
       
       // Calculate end time based on duration
       const durationMinutes = taskData.duration || 60; // Default to 1 hour if no duration
@@ -138,7 +143,7 @@ export const EventsDisplay: React.FC<EventsDisplayProps> = ({
         endTime,
         date: day.day,
         color: taskData.color || 'blue',
-        description: `Task converted from "${taskData.title}"`,
+        description: undefined,
         isRecurring: false,
         recurringDays: null,
         recurringEndDate: null

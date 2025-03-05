@@ -16,7 +16,7 @@ export const CurrentTimeIndicator: React.FC<CurrentTimeIndicatorProps> = ({ curr
 
   return (
     <motion.div 
-      className="absolute -left-16 right-0 flex items-center z-[5]" 
+      className="absolute -left-16 right-0 flex items-center z-[5] pointer-events-none" 
       style={{ top: `${getCurrentTimePosition()}px` }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}

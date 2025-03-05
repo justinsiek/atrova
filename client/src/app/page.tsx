@@ -34,6 +34,7 @@ export default function Page() {
         scheduleWithAI={handleScheduleWithAI}
         aiStatus={aiStatus}
         unscheduledTasks={3}
+        getRandomColor={getRandomColor}
       />
       <div className="flex-1">
         <Calendar 

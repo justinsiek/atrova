@@ -1,8 +1,16 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { COLORS } from '@/constants/colors';
 import { Check } from 'lucide-react';
 import Event from '@/components/calendar/Event';
 import { EventType } from '@/types';
+
+const eventColorMap = {
+  pink: COLORS.eventPink,
+  mint: COLORS.eventMint,
+  blue: COLORS.eventBlue,
+  purple: COLORS.eventPurple,
+  orange: COLORS.eventOrange
+} as const;
 
 interface TaskCardProps {
   id: string;
@@ -14,6 +22,7 @@ interface TaskCardProps {
   dueDate?: string;
   priority?: 'low' | 'medium' | 'high';
   duration?: number;
+  getRandomColor: () => "pink" | "mint" | "blue" | "purple" | "orange";
 }
 
 const TaskCard: React.FC<TaskCardProps> = ({ 
@@ -25,19 +34,17 @@ const TaskCard: React.FC<TaskCardProps> = ({
   aiScheduled,
   dueDate,
   priority,
-  duration
+  duration,
+  getRandomColor
 }) => {
   const dragPreviewRef = useRef<HTMLDivElement>(null);
+  const [dragOffset, setDragOffset] = useState<{ x: number, y: number } | null>(null);
+  const [eventColor] = useState(getRandomColor());
   
-  // Determine priority color
+  // Determine priority color for the task card indicator
   const priorityColor = priority === 'high' ? COLORS.error : 
                         priority === 'medium' ? COLORS.warning : 
                         priority === 'low' ? COLORS.info : COLORS.lightBrown;
-  
-  // Get event color based on priority
-  const eventColor = priority === 'high' ? COLORS.eventOrange : 
-                    priority === 'medium' ? COLORS.eventBlue : 
-                    priority === 'low' ? COLORS.eventMint : COLORS.eventPurple;
 
   // Create a mock event for the preview
   const previewEvent: EventType = {
@@ -46,9 +53,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
     startTime: '00:00',
     endTime: '01:00',
     date: 1,
-    color: priority === 'high' ? 'orange' : 
-           priority === 'medium' ? 'blue' : 
-           priority === 'low' ? 'mint' : 'purple',
+    color: eventColor,
     description: '',
     isRecurring: false,
     recurringDays: null,
@@ -61,11 +66,9 @@ const TaskCard: React.FC<TaskCardProps> = ({
     height: `${(duration || 60) * 2}px`,
     className: `absolute rounded-lg p-3 border shadow-sm`,
     style: {
-      width: '200px',
-      backgroundColor: priority === 'high' ? COLORS.eventOrange :
-                      priority === 'medium' ? COLORS.eventBlue :
-                      priority === 'low' ? COLORS.eventMint : 
-                      COLORS.eventPurple,
+      width: 'calc(100% - 0.5rem)',
+      marginLeft: '0.25rem',
+      backgroundColor: eventColorMap[eventColor],
       borderColor: COLORS.borderMedium,
       borderStyle: 'solid',
     }
@@ -79,9 +82,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
       title,
       priority,
       duration: duration || 60,
-      color: priority === 'high' ? 'orange' : 
-             priority === 'medium' ? 'blue' : 
-             priority === 'low' ? 'mint' : 'purple',
+      color: eventColor,
       description: `Task: ${title}`
     });
     
@@ -93,12 +94,30 @@ const TaskCard: React.FC<TaskCardProps> = ({
       // Position offscreen during drag
       dragPreviewRef.current.style.display = 'block';
       
-      // Set the custom drag image
+      // Calculate center point of preview
+      const rect = dragPreviewRef.current.getBoundingClientRect();
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      
+      // Store the offset from the cursor to the center
+      setDragOffset({
+        x: centerX,
+        y: centerY
+      });
+      
+      // Set the drag image centered on cursor
       e.dataTransfer.setDragImage(
         dragPreviewRef.current,
-        dragPreviewRef.current.clientWidth / 2,
-        10
+        centerX,
+        centerY
       );
+
+      // Also include the drag offset in the data transfer
+      const dragData = {
+        ...JSON.parse(taskData),
+        dragOffset: { x: centerX, y: centerY }
+      };
+      e.dataTransfer.setData('application/json', JSON.stringify(dragData));
     }
   };
 
@@ -108,6 +127,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
     if (dragPreviewRef.current) {
       dragPreviewRef.current.style.display = 'none';
     }
+    setDragOffset(null);
   };
   
   return (
@@ -116,7 +136,12 @@ const TaskCard: React.FC<TaskCardProps> = ({
       <div 
         ref={dragPreviewRef}
         className="fixed left-0 top-0 pointer-events-none"
-        style={{ display: 'none', zIndex: -1000 }}
+        style={{ 
+          display: 'none', 
+          zIndex: -1000,
+          width: 'calc((100vw - 18rem - 4rem - 4rem - 4rem) / 7)',
+          transform: 'translate(-50%, -50%)' // Center the preview element
+        }}
       >
         <Event
           {...previewEvent}
@@ -156,9 +181,9 @@ const TaskCard: React.FC<TaskCardProps> = ({
           )}
         </button>
         
-        {/* Content */}
-        <div className="flex flex-col flex-grow">
-          <div className="flex justify-between">
+        {/* Content - add self-center here */}
+        <div className="flex flex-col flex-grow self-center">
+          <div className="flex justify-between items-center">
             <h3 
               className={`text-sm font-medium ${completed ? 'line-through opacity-70' : ''}`}
               style={{ color: COLORS.sidebarText }}
