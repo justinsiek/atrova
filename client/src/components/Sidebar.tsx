@@ -166,14 +166,6 @@ const Sidebar: React.FC<SidebarProps> = ({ onNewEvent, scheduleWithAI, aiStatus,
         filter={filter} 
         setFilter={setFilter} 
       />
-
-      {/* Progress Bar */}
-      <TaskProgressBar 
-        completedTasks={completedTasks} 
-        totalTasks={totalTasks} 
-        completionPercentage={completionPercentage} 
-      />
-
       {/* Tasks List with loading state */}
       {isLoading && tasks.length === 0 ? (
         <div className="flex-1 flex items-center justify-center">

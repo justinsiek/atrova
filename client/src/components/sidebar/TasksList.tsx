@@ -35,44 +35,31 @@ const TasksList: React.FC<TasksListProps> = ({
   getRandomColor
 }) => {
   return (
-    <div className="flex-1 overflow-y-auto scrollbar-hide space-y-2">
-      <AnimatePresence initial={false}>
-        {filteredTasks.map((task) => (
-          <motion.div
-            key={task.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.2 }}
-            className="cursor-grab"
-          >
-            <TaskCard 
-              title={task.title} 
-              id={task.id} 
-              onDelete={handleDeleteTask}
-              onToggleComplete={handleToggleComplete}
-              completed={task.completed}
-              aiScheduled={task.aiScheduled}
-              dueDate={task.dueDate}
-              priority={task.priority}
-              duration={task.duration}
-              getRandomColor={getRandomColor}
-            />
-          </motion.div>
-        ))}
-      </AnimatePresence>
-
-      {filteredTasks.length === 0 && (
-        <div className="text-center py-10 opacity-50" style={{ color: COLORS.sidebarText }}>
-          {tasks.length === 0 ? (
-            <p>No tasks yet. Add one to get started.</p>
-          ) : !showCompleted && completedTasks === totalTasks ? (
-            <p>All tasks completed! 🎉</p>
-          ) : (
-            <p>No tasks match your filters.</p>
-          )}
-        </div>
-      )}
+    <div className="flex-1 flex flex-col overflow-hidden">    
+      <div className="flex-1 overflow-y-auto scrollbar-hide pr-1">
+        {filteredTasks.length === 0 ? (
+          <div className="text-center py-4 text-sm" style={{ color: COLORS.sidebarText }}>
+            No tasks found
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {filteredTasks.map(task => (
+              <TaskCard
+                key={task.id}
+                id={task.id}
+                title={task.title}
+                completed={task.completed}
+                onDelete={handleDeleteTask}
+                onToggleComplete={handleToggleComplete}
+                priority={task.priority}
+                dueDate={task.dueDate}
+                duration={task.duration}
+                getRandomColor={getRandomColor}
+              />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
