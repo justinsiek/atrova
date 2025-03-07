@@ -1,9 +1,10 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from supabase import create_client
+from supabase import create_client, Client
 import os
 from dotenv import load_dotenv
 import uuid
+from werkzeug.security import generate_password_hash
 
 # Load environment variables
 load_dotenv()
@@ -122,6 +123,48 @@ def delete_event(event_id):
             return jsonify({'result': 'Event deleted successfully', 'event': event_to_delete}), 200
         
         return jsonify({'error': 'Failed to delete event'}), 500
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/auth/signup', methods=['POST'])
+def signup():
+    try:
+        data = request.get_json()
+        email = data.get('email')
+        password = data.get('password')
+        name = data.get('name')
+
+        if not email or not password or not name:
+            return jsonify({'error': 'Email, password, and name are required'}), 400
+
+        # Create user in Supabase Auth
+        try:
+            user = supabase.auth.sign_up({
+                "email": email,
+                "password": password,
+                "options": {
+                    "data": {
+                        "full_name": name
+                    }
+                }
+            })
+
+            return jsonify({
+                'message': 'User created successfully',
+                'user': {
+                    'id': user.user.id,
+                    'email': user.user.email,
+                    'name': name
+                }
+            }), 201
+
+        except Exception as e:
+            # Handle specific Supabase errors
+            error_msg = str(e)
+            if "User already registered" in error_msg:
+                return jsonify({'error': 'Email already registered'}), 409
+            raise e
+
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

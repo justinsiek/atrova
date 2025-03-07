@@ -18,11 +18,47 @@ const SignupPage = () => {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [agreeToTerms, setAgreeToTerms] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    // Handle sign up logic here
-    console.log({ name, email, password, confirmPassword, agreeToTerms })
-  }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Basic validation
+    if (password !== confirmPassword) {
+      alert("Passwords don't match!");
+      return;
+    }
+    
+    if (!agreeToTerms) {
+      alert("Please agree to the terms and conditions");
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          password,
+          name,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to sign up');
+      }
+
+      // Redirect to login page on success
+      window.location.href = '/login';
+      
+    } catch (error) {
+      console.error('Signup error:', error);
+      alert(error instanceof Error ? error.message : 'Failed to sign up');
+    }
+  };
 
   return (
     <div 
