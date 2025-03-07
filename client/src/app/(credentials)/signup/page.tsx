@@ -83,18 +83,9 @@ const SignupPage = () => {
       <header className="w-full p-6 flex justify-between items-center z-10">
         <div className="flex items-center">
           <Link href="/">
-            <span className={`text-2xl font-bold ${domine.className}`} style={{ color: COLORS.darkBrown }}>
+            <span className={`text-3xl font-bold ${domine.className}`} style={{ color: COLORS.darkBrown }}>
               atrova
             </span>
-          </Link>
-        </div>
-        <div className="hidden md:flex space-x-8 items-center">
-          <Link 
-            href="/login" 
-            className="text-sm font-medium hover:underline"
-            style={{ color: COLORS.mediumBrown }}
-          >
-            Already have an account? Sign In
           </Link>
         </div>
       </header>
@@ -325,7 +316,7 @@ const SignupPage = () => {
                 </button>
               </form>
 
-              <div className="mt-6 text-center md:hidden">
+              <div className="mt-6 text-center">
                 <p style={{ color: COLORS.mediumBrown }}>
                   Already have an account?{' '}
                   <Link 

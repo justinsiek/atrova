@@ -263,7 +263,7 @@ export default function Calendar({ showForm, setShowForm, scheduleWithAI, aiStat
           {/* Time Labels */}
           <TimeLabels showTimeLabels={showTimeLabels} />
 
-          <div className="grid grid-cols-7 gap-4 pt-8">
+          <div className="grid grid-cols-7 pt-8">
             {/* Grid Lines */}
             <GridLines calendarDays={calendarDays} />
 

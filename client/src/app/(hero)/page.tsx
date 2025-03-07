@@ -66,7 +66,7 @@ const Hero = () => {
       />
       
       {/* Header */}
-      <header className="w-full p-6 flex justify-between items-center z-10">
+      <header className="w-full pt-6 pb-10 px-6 flex justify-between items-center z-10">
         <div className="flex items-center">
           <span className={`text-3xl font-bold ${domine.className}`} style={{ color: COLORS.darkBrown }}>
             atrova

@@ -86,15 +86,6 @@ const LoginPage = () => {
             </span>
           </Link>
         </div>
-        <div className="hidden md:flex space-x-8 items-center">
-          <Link 
-            href="/signup" 
-            className="text-sm font-medium hover:underline"
-            style={{ color: COLORS.mediumBrown }}
-          >
-            Don't have an account? Sign Up
-          </Link>
-        </div>
       </header>
       
       {/* Content Container */}
@@ -249,7 +240,7 @@ const LoginPage = () => {
                 </button>
               </form>
 
-              <div className="mt-6 text-center md:hidden">
+              <div className="mt-6 text-center">
                 <p style={{ color: COLORS.mediumBrown }}>
                   Don't have an account?{' '}
                   <Link 
