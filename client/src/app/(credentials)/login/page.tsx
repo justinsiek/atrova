@@ -1,10 +1,10 @@
 "use client"
 
 import React, { useState } from 'react'
-import { Domine } from "next/font/google"
 import Link from 'next/link'
+import { Domine } from "next/font/google"
+import { Mail, Lock, Sparkles } from 'lucide-react'
 import { COLORS } from "@/constants/colors"
-import { Mail, Lock } from 'lucide-react'
 
 const domine = Domine({
   subsets: ['latin'],
@@ -27,123 +27,132 @@ const LoginPage = () => {
       className="min-h-screen flex flex-col relative overflow-hidden"
       style={{ backgroundColor: COLORS.background }}
     >
-      {/* Background Decorative Elements - Larger and positioned better */}
+      {/* Background Decorative Elements */}
       <div 
-        className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full opacity-20 border-2 border-solid"
+        className="absolute top-0 right-0 w-96 h-96 rounded-full opacity-20 border-2 border-solid"
         style={{ 
           backgroundColor: COLORS.eventPink, 
-          transform: "translate(20%, -30%)",
+          transform: "translate(30%, -30%)",
           borderColor: "#e3b3ac" 
         }}
       />
       <div 
-        className="absolute bottom-0 left-0 w-[500px] h-[500px] rounded-full opacity-20 border-2 border-solid"
+        className="absolute bottom-0 left-0 w-96 h-96 rounded-full opacity-20 border-2 border-solid"
         style={{ 
           backgroundColor: COLORS.eventMint, 
-          transform: "translate(-20%, 30%)",
+          transform: "translate(-30%, 30%)",
           borderColor: "#bacbb7" 
         }}
       />
       
-      {/* Header Area */}
+      {/* Decorative Calendar Elements */}
+      <div 
+        className="absolute top-40 right-48 h-36 w-36 rounded-lg rotate-12 shadow-md z-0 border-2 border-solid hidden lg:block"
+        style={{ 
+          backgroundColor: COLORS.eventPink,
+          borderColor: "#e3b3ac"
+        }}
+      />
+      <div 
+        className="absolute bottom-40 left-20 h-36 w-36 rounded-lg -rotate-12 shadow-md z-0 border-2 border-solid hidden lg:block"
+        style={{ 
+          backgroundColor: COLORS.eventMint,
+          borderColor: "#bacbb7"
+        }}
+      />
+      <div 
+        className="absolute top-80 left-28 h-28 w-28 rounded-lg -rotate-12 shadow-sm z-0 border-2 border-solid hidden lg:block"
+        style={{ 
+          backgroundColor: COLORS.eventBlue, 
+          opacity: 0.8,
+          borderColor: "#b6cede"
+        }}
+      />
+      <div 
+        className="absolute bottom-60 right-40 h-24 w-24 rounded-lg rotate-12 shadow-sm z-0 border-2 border-solid hidden lg:block"
+        style={{ 
+          backgroundColor: COLORS.eventOrange, 
+          opacity: 0.8,
+          borderColor: "#e7c3a7"
+        }}
+      />
+      
+      {/* Header */}
       <header className="w-full p-6 flex justify-between items-center z-10">
         <div className="flex items-center">
           <Link href="/">
-            <span className={`text-2xl font-bold ${domine.className}`} style={{ color: COLORS.darkBrown }}>
+            <span className={`text-3xl font-bold ${domine.className}`} style={{ color: COLORS.darkBrown }}>
               atrova
             </span>
           </Link>
         </div>
-        <div className="text-sm" style={{ color: COLORS.mediumBrown }}>
-          Need help? <a href="#" className="underline" style={{ color: COLORS.accent1 }}>Contact support</a>
+        <div className="hidden md:flex space-x-8 items-center">
+          <Link 
+            href="/signup" 
+            className="text-sm font-medium hover:underline"
+            style={{ color: COLORS.mediumBrown }}
+          >
+            Don't have an account? Sign Up
+          </Link>
         </div>
       </header>
       
       {/* Content Container */}
       <main className="flex-1 flex items-center justify-center z-10 px-6 py-12">
-        <div className="w-full max-w-4xl flex flex-col md:flex-row items-center justify-between gap-12">
-          {/* Left side content - Simple Minimal Design */}
-          <div className="hidden md:block md:w-5/12">
+        <div className="w-full max-w-4xl flex flex-col md:flex-row items-center gap-12">
+          {/* Left side content */}
+          <div className="w-full md:w-5/12">
             <h1 
-              className={`text-3xl font-bold ${domine.className} mb-6`}
+              className={`text-3xl font-bold ${domine.className} mb-6 text-center md:text-left`}
               style={{ color: COLORS.darkBrown }}
             >
-              Welcome back to your AI-powered calendar
+              Welcome back
             </h1>
-            <p className="mb-8" style={{ color: COLORS.mediumBrown }}>
-              Log in to continue managing your schedule with Atrova's intelligent time management solutions.
+            <p className="mb-8 text-center md:text-left" style={{ color: COLORS.mediumBrown }}>
+              Sign in to continue managing your schedule with Atrova's intelligent time management solutions.
             </p>
             
-            {/* Simple Minimal Illustration */}
-            <div className="flex justify-center">
-              <div className="relative w-64 h-64 flex items-center justify-center">
-                {/* Simple colored rectangles */}
+            <div className="hidden md:block">
+              <div className="flex items-center mb-6">
                 <div 
-                  className="absolute w-40 h-40 rounded-lg transform rotate-45"
-                  style={{ 
-                    backgroundColor: COLORS.eventPink,
-                    opacity: 0.3
-                  }}
-                ></div>
-                
-                <div 
-                  className="absolute w-40 h-40 rounded-lg transform -rotate-12"
-                  style={{ 
-                    backgroundColor: COLORS.eventMint,
-                    opacity: 0.3
-                  }}
-                ></div>
-                
-                <div 
-                  className="absolute w-40 h-40 rounded-lg transform rotate-12"
-                  style={{ 
-                    backgroundColor: COLORS.eventBlue,
-                    opacity: 0.3
-                  }}
-                ></div>
-                
-                {/* Simple logo-like center element */}
-                <div 
-                  className="absolute w-24 h-24 rounded-lg shadow-md z-10 flex items-center justify-center"
-                  style={{ 
-                    backgroundColor: COLORS.paperWhite,
-                    transform: "rotate(45deg)"
-                  }}
+                  className="w-10 h-10 rounded-full flex items-center justify-center mr-4"
+                  style={{ backgroundColor: COLORS.eventMint }}
                 >
-                  <div 
-                    className="w-12 h-12 rounded-full"
-                    style={{ 
-                      backgroundColor: COLORS.accent1,
-                      opacity: 0.8
-                    }}
-                  ></div>
+                  <Sparkles color={COLORS.darkBrown} size={16} />
                 </div>
+                <span style={{ color: COLORS.mediumBrown }}>
+                  Resume where you left off
+                </span>
+              </div>
+              
+              <div className="flex items-center mb-6">
+                <div 
+                  className="w-10 h-10 rounded-full flex items-center justify-center mr-4"
+                  style={{ backgroundColor: COLORS.eventPink }}
+                >
+                  <Sparkles color={COLORS.darkBrown} size={16} />
+                </div>
+                <span style={{ color: COLORS.mediumBrown }}>
+                  New AI improvements every week
+                </span>
               </div>
             </div>
           </div>
           
-          {/* Login Form */}
-          <div className="w-full md:w-7/12 relative">
+          {/* Right side - login form */}
+          <div className="w-full md:w-7/12">
             <div 
-              className="relative p-8 rounded-lg shadow-lg z-10"
+              className="p-8 rounded-lg shadow-lg w-full max-w-md mx-auto relative"
               style={{ 
                 backgroundColor: COLORS.paperWhite, 
-                border: `1px solid ${COLORS.borderLight}`,
-                boxShadow: '0 10px 25px rgba(0,0,0,0.05)'
+                border: `1px solid ${COLORS.borderLight}` 
               }}
             >
-              <div className="text-center mb-6">
-                <h2 
-                  className={`text-3xl font-bold ${domine.className}`}
-                  style={{ color: COLORS.darkBrown }}
-                >
-                  Sign In
-                </h2>
-                <p className="mt-2" style={{ color: COLORS.mediumBrown }}>
-                  Continue to your calendar
-                </p>
+              <div className="absolute -top-3 -right-3 flex items-center justify-center h-12 w-12 rounded-full shadow-md z-20"
+                   style={{ backgroundColor: COLORS.accent1 }}>
+                <Sparkles size={20} color="white" />
               </div>
-
+              
               <form onSubmit={handleSubmit}>
                 <div className="mb-6">
                   <label 
@@ -236,15 +245,15 @@ const LoginPage = () => {
                   className="w-full flex items-center justify-center px-6 py-3 rounded-lg transition-all duration-200 focus:outline-none text-white hover:shadow-md"
                   style={{ backgroundColor: COLORS.accent1 }}
                 >
-                  Log In
+                  Sign In
                 </button>
               </form>
 
-              <div className="mt-6 text-center">
+              <div className="mt-6 text-center md:hidden">
                 <p style={{ color: COLORS.mediumBrown }}>
                   Don't have an account?{' '}
                   <Link 
-                    href="/register" 
+                    href="/signup" 
                     className="hover:underline"
                     style={{ color: COLORS.accent1, fontWeight: 'bold' }}
                   >

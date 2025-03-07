@@ -114,7 +114,7 @@ const Hero = () => {
           </p>
           <div className="flex flex-col sm:flex-row justify-center lg:justify-start space-y-4 sm:space-y-0 sm:space-x-4">
             <Link 
-              href="/register" 
+              href="/signup" 
               className="px-8 py-3 rounded-lg transition-all duration-200 text-white hover:shadow-md flex items-center justify-center"
               style={{ backgroundColor: COLORS.accent1 }}
             >
@@ -255,7 +255,7 @@ const Hero = () => {
             Join thousands of users who are already saving time with Atrova.
           </p>
           <Link 
-            href="/register" 
+            href="/signup" 
             className="px-8 py-3 rounded-lg transition-all duration-200 text-white hover:shadow-md inline-flex items-center justify-center"
             style={{ backgroundColor: COLORS.accent1 }}
           >
