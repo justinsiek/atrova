@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import { Domine } from "next/font/google"
 import Link from 'next/link'
 import { COLORS } from "@/constants/colors"
-import { Calendar, Mail, Lock } from 'lucide-react'
+import {  Mail, Lock } from 'lucide-react'
 
 const domine = Domine({
   subsets: ['latin'],
@@ -24,24 +24,79 @@ const LoginPage = () => {
 
   return (
     <div 
-      className="min-h-screen flex flex-col items-center justify-center p-6"
+      className="min-h-screen flex flex-col items-center justify-center p-6 md:p-0 relative overflow-hidden"
       style={{ backgroundColor: COLORS.background }}
     >
+      {/* Background Decorative Elements */}
       <div 
-        className="w-full max-w-md"
-        style={{ maxWidth: "480px" }}
+        className="absolute top-0 right-0 w-96 h-96 rounded-full opacity-20 border-2 border-solid"
+        style={{ 
+          backgroundColor: COLORS.eventPink, 
+          transform: "translate(30%, -30%)",
+          borderColor: "#e3b3ac" 
+        }}
+      />
+      <div 
+        className="absolute bottom-0 left-0 w-96 h-96 rounded-full opacity-20 border-2 border-solid"
+        style={{ 
+          backgroundColor: COLORS.eventMint, 
+          transform: "translate(-30%, 30%)",
+          borderColor: "#bacbb7" 
+        }}
+      />
+      
+      {/* Header Area */}
+      <div className="absolute top-0 left-0 right-0 p-6 flex justify-between items-center">
+        <div className="flex items-center">
+          <span className={`text-2xl font-bold ${domine.className}`} style={{ color: COLORS.darkBrown }}>
+            atrova
+          </span>
+        </div>
+        <div className="text-sm" style={{ color: COLORS.mediumBrown }}>
+          Need help? <a href="#" className="underline" style={{ color: COLORS.accent1 }}>Contact support</a>
+        </div>
+      </div>
+      
+      <div 
+        className="w-full max-w-4xl flex items-center justify-center z-10"
       >
-        {/* Login Form with Accent Elements */}
-        <div className="relative">
-          {/* Colored Accent Elements */}
+        {/* Login Form */}
+        <div className="w-full max-w-md relative">
+          {/* Decorative Calendar Elements */}
           <div 
-            className="absolute -top-4 -right-16 w-48 h-48 rounded-lg rotate-12 shadow-sm"
-            style={{ backgroundColor: COLORS.eventPink }}
-          />
+            className="absolute -top-4 -right-8 h-36 w-36 rounded-lg rotate-12 shadow-md z-0 border-2 border-solid"
+            style={{ 
+              backgroundColor: COLORS.eventPink,
+              borderColor: "#e3b3ac"
+            }}
+          ></div>
+          
           <div 
-            className="absolute -bottom-6 -left-12 w-48 h-48 rounded-lg -rotate-12 shadow-sm"
-            style={{ backgroundColor: COLORS.eventMint }}
-          />
+            className="absolute -bottom-8 -left-8 h-36 w-36 rounded-lg -rotate-12 shadow-md z-0 border-2 border-solid"
+            style={{ 
+              backgroundColor: COLORS.eventMint,
+              borderColor: "#bacbb7"
+            }}
+          ></div>
+          
+          {/* Small decorative elements */}
+          <div 
+            className="absolute top-20 -left-12 h-16 w-16 rounded-lg rotate-45 shadow-sm z-0 border-2 border-solid"
+            style={{ 
+              backgroundColor: COLORS.eventBlue, 
+              opacity: 0.8,
+              borderColor: "#b6cede"
+            }}
+          ></div>
+          
+          <div 
+            className="absolute bottom-20 -right-14 h-20 w-20 rounded-lg rotate-45 shadow-sm z-0 border-2 border-solid"
+            style={{ 
+              backgroundColor: COLORS.eventOrange, 
+              opacity: 0.8,
+              borderColor: "#e7c3a7"
+            }}
+          ></div>
           
           {/* Login Form */}
           <div 
@@ -152,7 +207,6 @@ const LoginPage = () => {
                 className="w-full flex items-center justify-center px-6 py-3 rounded-lg transition-all duration-200 focus:outline-none text-white hover:shadow-md"
                 style={{ backgroundColor: COLORS.accent1 }}
               >
-                <Calendar size={18} className="mr-2" />
                 Log In
               </button>
             </form>
@@ -174,7 +228,7 @@ const LoginPage = () => {
       </div>
       
       {/* Footer */}
-      <div className="mt-8 text-center text-sm" style={{ color: COLORS.lightBrown }}>
+      <div className="mt-16 mb-6 text-center text-sm z-10" style={{ color: COLORS.lightBrown }}>
         &copy; {new Date().getFullYear()} Atrova. All rights reserved.
       </div>
     </div>
