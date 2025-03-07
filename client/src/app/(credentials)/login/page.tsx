@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { Domine } from "next/font/google"
 import { Mail, Lock, Sparkles } from 'lucide-react'
 import { COLORS } from "@/constants/colors"
+import { useAuth } from '@/contexts/AuthContext'
 
 const domine = Domine({
   subsets: ['latin'],
@@ -12,15 +13,56 @@ const domine = Domine({
 })
 
 const LoginPage = () => {
+  const { login } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [rememberMe, setRememberMe] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    // Handle login logic here
-    console.log({ email, password, rememberMe })
-  }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Login failed');
+      }
+
+      // Use the auth context to login with all user info
+      login(
+        data.user.access_token, 
+        data.user.refresh_token, 
+        data.user.id,
+        data.user.name || '',
+        data.user.email
+      );
+      
+      // Remember me functionality
+      if (rememberMe) {
+        localStorage.setItem('rememberMe', 'true');
+      } else {
+        localStorage.removeItem('rememberMe');
+      }
+
+      // Redirect to dashboard
+      window.location.href = '/dashboard';
+      
+    } catch (error) {
+      console.error('Login error:', error);
+      alert(error instanceof Error ? error.message : 'Failed to login');
+    }
+  };
 
   return (
     <div 

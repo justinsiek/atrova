@@ -20,10 +20,31 @@ if not supabase_url or not supabase_key:
     raise ValueError("Missing Supabase credentials. Please set SUPABASE_URL and SUPABASE_KEY environment variables.")
 
 supabase = create_client(supabase_url, supabase_key)
+
+# Add a helper function to get the current user ID from the auth token
+def get_current_user_id():
+    auth_header = request.headers.get('Authorization')
+    if not auth_header or not auth_header.startswith('Bearer '):
+        return None
+    
+    token = auth_header.split(' ')[1]
+    try:
+        # Verify the token with Supabase
+        user = supabase.auth.get_user(token)
+        return user.user.id
+    except Exception as e:
+        print(f"Error verifying token: {str(e)}")
+        return None
+
 # Tasks API endpoints
 @app.route('/api/tasks', methods=['GET'])
 def get_tasks():
     try:
+        user_id = get_current_user_id()
+        if not user_id:
+            return jsonify({'error': 'Unauthorized'}), 401
+            
+        # With RLS policies, Supabase will automatically filter tasks by user_id
         response = supabase.table("tasks").select("*").execute()
         return jsonify(response.data)
     except Exception as e:
@@ -32,9 +53,16 @@ def get_tasks():
 @app.route('/api/tasks', methods=['POST'])
 def add_task():
     try:
+        user_id = get_current_user_id()
+        if not user_id:
+            return jsonify({'error': 'Unauthorized'}), 401
+            
         new_task = request.get_json()
         if 'id' not in new_task:
             new_task['id'] = str(uuid.uuid4())
+        
+        # Add the user_id to the task
+        new_task['user_id'] = user_id
         
         response = supabase.table("tasks").insert(new_task).execute()
         if response.data:
@@ -77,6 +105,11 @@ def delete_task(task_id):
 @app.route('/api/events', methods=['GET'])
 def get_events():
     try:
+        user_id = get_current_user_id()
+        if not user_id:
+            return jsonify({'error': 'Unauthorized'}), 401
+            
+        # With RLS policies, Supabase will automatically filter events by user_id
         response = supabase.table("events").select("*").execute()
         return jsonify(response.data)
     except Exception as e:
@@ -85,9 +118,16 @@ def get_events():
 @app.route('/api/events', methods=['POST'])
 def add_event():
     try:
+        user_id = get_current_user_id()
+        if not user_id:
+            return jsonify({'error': 'Unauthorized'}), 401
+            
         new_event = request.get_json()
         if 'id' not in new_event:
             new_event['id'] = str(uuid.uuid4())
+        
+        # Add the user_id to the event
+        new_event['user_id'] = user_id
         
         response = supabase.table("events").insert(new_event).execute()
         if response.data:
@@ -167,6 +207,72 @@ def signup():
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@app.route('/api/auth/login', methods=['POST'])
+def login():
+    try:
+        data = request.get_json()
+        email = data.get('email')
+        password = data.get('password')
+
+        if not email or not password:
+            return jsonify({'error': 'Email and password are required'}), 400
+
+        # Authenticate with Supabase
+        try:
+            auth_response = supabase.auth.sign_in_with_password({
+                "email": email,
+                "password": password
+            })
+            
+            # Get user data
+            user = auth_response.user
+            session = auth_response.session
+            
+            # Get user's name from metadata
+            user_name = user.user_metadata.get('full_name', '')
+
+            return jsonify({
+                'message': 'Login successful',
+                'user': {
+                    'id': user.id,
+                    'email': user.email,
+                    'name': user_name,
+                    'access_token': session.access_token,
+                    'refresh_token': session.refresh_token
+                }
+            }), 200
+
+        except Exception as e:
+            # Handle specific Supabase errors
+            error_msg = str(e)
+            if "Invalid login credentials" in error_msg:
+                return jsonify({'error': 'Invalid email or password'}), 401
+            raise e
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/auth/verify', methods=['GET'])
+def verify_token():
+    try:
+        user_id = get_current_user_id()
+        if not user_id:
+            return jsonify({'authenticated': False}), 401
+        
+        # Get user info from Supabase
+        user = supabase.auth.get_user(request.headers.get('Authorization').split(' ')[1])
+        return jsonify({
+            'authenticated': True,
+            'user': {
+                'id': user.user.id,
+                'email': user.user.email,
+                'name': user.user.user_metadata.get('full_name', '')
+            }
+        }), 200
+    except Exception as e:
+        print(f"Token verification error: {str(e)}")
+        return jsonify({'authenticated': False, 'error': str(e)}), 401
 
 if __name__ == '__main__':
     app.run(debug=True)

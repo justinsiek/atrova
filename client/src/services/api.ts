@@ -5,9 +5,17 @@ const API_URL = 'http://localhost:5000/api';
 import { Task } from '@/components/sidebar/types';
 import { EventType } from '@/types';
 
+// Add a helper function to get the auth token
+const getAuthToken = () => localStorage.getItem('accessToken');
+
 // Task-related API calls
 export const fetchTasks = async () => {
-  const response = await fetch(`${API_URL}/tasks`);
+  const token = getAuthToken();
+  const response = await fetch(`${API_URL}/tasks`, {
+    headers: {
+      'Authorization': token ? `Bearer ${token}` : '',
+    }
+  });
   if (!response.ok) {
     throw new Error('Failed to fetch tasks');
   }
@@ -15,10 +23,12 @@ export const fetchTasks = async () => {
 };
 
 export const createTask = async (task: Omit<Task, 'id'>) => {
+  const token = getAuthToken();
   const response = await fetch(`${API_URL}/tasks`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'Authorization': token ? `Bearer ${token}` : '',
     },
     body: JSON.stringify(task),
   });
@@ -29,10 +39,12 @@ export const createTask = async (task: Omit<Task, 'id'>) => {
 };
 
 export const updateTask = async (id: string, task: any) => {
+  const token = getAuthToken();
   const response = await fetch(`${API_URL}/tasks/${id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
+      'Authorization': token ? `Bearer ${token}` : '',
     },
     body: JSON.stringify(task),
   });
@@ -44,8 +56,12 @@ export const updateTask = async (id: string, task: any) => {
 
 export const deleteTask = async (id: string) => {
   console.log(`Deleting task with ID: ${id}`);
+  const token = getAuthToken();
   const response = await fetch(`${API_URL}/tasks/${id}`, {
     method: 'DELETE',
+    headers: {
+      'Authorization': token ? `Bearer ${token}` : '',
+    }
   });
   
   console.log(`Delete task response status: ${response.status}`);
@@ -63,7 +79,12 @@ export const deleteTask = async (id: string) => {
 
 // Event-related API calls
 export const fetchEvents = async () => {
-  const response = await fetch(`${API_URL}/events`);
+  const token = getAuthToken();
+  const response = await fetch(`${API_URL}/events`, {
+    headers: {
+      'Authorization': token ? `Bearer ${token}` : '',
+    }
+  });
   if (!response.ok) {
     throw new Error('Failed to fetch events');
   }
@@ -71,10 +92,12 @@ export const fetchEvents = async () => {
 };
 
 export const createEvent = async (event: Omit<EventType, 'id'>) => {
+  const token = getAuthToken();
   const response = await fetch(`${API_URL}/events`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'Authorization': token ? `Bearer ${token}` : '',
     },
     body: JSON.stringify(event),
   });
@@ -85,10 +108,12 @@ export const createEvent = async (event: Omit<EventType, 'id'>) => {
 };
 
 export const updateEvent = async (id: string, event: any) => {
+  const token = getAuthToken();
   const response = await fetch(`${API_URL}/events/${id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
+      'Authorization': token ? `Bearer ${token}` : '',
     },
     body: JSON.stringify(event),
   });
@@ -100,8 +125,12 @@ export const updateEvent = async (id: string, event: any) => {
 
 export const deleteEvent = async (id: string) => {
   console.log(`Deleting event with ID: ${id}`);
+  const token = getAuthToken();
   const response = await fetch(`${API_URL}/events/${id}`, {
     method: 'DELETE',
+    headers: {
+      'Authorization': token ? `Bearer ${token}` : '',
+    }
   });
   
   console.log(`Delete event response status: ${response.status}`);
