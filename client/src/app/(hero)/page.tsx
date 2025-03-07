@@ -35,7 +35,7 @@ const Hero = () => {
       
       {/* Decorative Calendar Elements */}
       <div 
-        className="absolute top-40 right-48 h-36 w-36 rounded-lg rotate-12 shadow-md z-0 border-2 border-solid hidden lg:block"
+        className="absolute top-1/3 right-32 h-48 w-48 rounded-lg rotate-12 shadow-md z-0 border-2 border-solid hidden lg:block"
         style={{ 
           backgroundColor: COLORS.eventPink,
           borderColor: "#e3b3ac"
@@ -49,7 +49,7 @@ const Hero = () => {
         }}
       />
       <div 
-        className="absolute top-80 left-28 h-28 w-28 rounded-lg -rotate-12 shadow-sm z-0 border-2 border-solid hidden lg:block"
+        className="absolute top-80 left-28 h-40 w-40 rounded-lg -rotate-12 shadow-sm z-0 border-2 border-solid hidden lg:block"
         style={{ 
           backgroundColor: COLORS.eventBlue, 
           opacity: 0.8,
@@ -57,7 +57,7 @@ const Hero = () => {
         }}
       />
       <div 
-        className="absolute bottom-60 right-40 h-24 w-24 rounded-lg rotate-12 shadow-sm z-0 border-2 border-solid hidden lg:block"
+        className="absolute bottom-96 right-1/4 h-24 w-24 rounded-lg rotate-12 shadow-sm z-0 border-2 border-solid hidden lg:block"
         style={{ 
           backgroundColor: COLORS.eventOrange, 
           opacity: 0.8,
@@ -144,6 +144,7 @@ const Hero = () => {
                  style={{ backgroundColor: COLORS.accent1 }}>
               <Sparkles size={20} color="white" />
             </div>
+            {/* 
             <img 
               src="/calendar-preview.png" 
               alt="Atrova Calendar Preview" 
@@ -152,6 +153,10 @@ const Hero = () => {
               // If you don't have an image yet, remove the image and use a placeholder div:
               // className="w-full h-[400px] bg-gray-100 rounded flex items-center justify-center"
             />
+            */}
+            <div className="w-full h-[350px] bg-gray-100 rounded flex items-center justify-center">
+              calander image
+            </div>
           </div>
         </div>
       </main>
@@ -252,7 +257,7 @@ const Hero = () => {
             Ready to take control of your schedule?
           </h2>
           <p className="text-lg mb-8" style={{ color: COLORS.mediumBrown }}>
-            Join thousands of users who are already saving time with Atrova.
+            Join a few users who are already saving time with Atrova.
           </p>
           <Link 
             href="/signup" 
