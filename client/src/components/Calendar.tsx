@@ -233,7 +233,7 @@ export default function Calendar({ showForm, setShowForm, scheduleWithAI, aiStat
   }
 
   return (
-    <div className="w-full h-[calc(100vh-32px)] mx-auto p-4 md:p-8 relative bg-[#fbf7f4]">
+    <div className="w-full h-[calc(100vh-32px)] mx-auto p-4 md:pb-8relative bg-[#fbf7f4]">
       {/* Calendar Toolbar */}
       <CalendarToolbar 
         view={view}
