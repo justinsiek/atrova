@@ -25,7 +25,7 @@ const Hero = () => {
         }}
       />
       <div 
-        className="absolute bottom-0 left-0 w-96 h-96 rounded-full opacity-20 border-2 border-solid"
+        className="absolute bottom-0 right-0 w-96 h-96 rounded-full opacity-20 border-2 border-solid"
         style={{ 
           backgroundColor: COLORS.eventMint, 
           transform: "translate(-30%, 30%)",
@@ -42,7 +42,7 @@ const Hero = () => {
         }}
       />
       <div 
-        className="absolute bottom-40 left-20 h-36 w-36 rounded-lg -rotate-12 shadow-md z-0 border-2 border-solid hidden lg:block"
+        className="absolute bottom-24 left-20 h-36 w-36 rounded-lg -rotate-12 shadow-md z-0 border-2 border-solid hidden lg:block"
         style={{ 
           backgroundColor: COLORS.eventMint,
           borderColor: "#bacbb7"
