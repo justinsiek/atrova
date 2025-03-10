@@ -153,7 +153,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
       <div 
         className={`p-3 rounded-md shadow-sm relative ${completed ? 'opacity-70' : ''} flex items-start`}
         style={{ backgroundColor: '#333232', border: `1px solid ${COLORS.sidebarBorder}` }}
-        draggable={!completed}
+        draggable={!completed && !aiScheduled}
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >
@@ -165,6 +165,18 @@ const TaskCard: React.FC<TaskCardProps> = ({
             opacity: completed ? 0.3 : 1
           }}
         ></div>
+        
+        {/* Add a more prominent scheduled badge if task is scheduled */}
+        {aiScheduled && (
+          <div className="absolute right-1 top-1 bg-purple-500 bg-opacity-90 rounded-full px-1 py-0.5 text-[10px] text-white font-medium">
+            <div className="flex items-center">
+              <svg className="w-2.5 h-2.5 mr-0.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M13 10V3L4 14h7v7l9-11h-7z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              AI
+            </div>
+          </div>
+        )}
         
         {/* Checkbox - now properly centered */}
         <button
@@ -230,7 +242,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
             {aiScheduled && (
               <div 
                 className="text-xs flex items-center"
-                style={{ color: COLORS.accent4 }}
+                style={{ color: COLORS.accent4, fontWeight: 'bold' }}
               >
                 <svg className="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M9 12L11 14L15 10M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>

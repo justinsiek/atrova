@@ -1,5 +1,6 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { COLORS } from "@/constants/colors"
+import { EventType } from "@/types"
 
 interface CalendarDay {
   day: number
@@ -22,22 +23,131 @@ interface EventFormProps {
     recurringDays?: string
     recurringEndDate?: string
   }) => void
+  eventToEdit?: EventType | null
+  onUpdateEvent?: (id: string, event: Omit<EventType, 'id'>) => void
 }
 
 const WEEKDAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
-export default function EventForm({ showForm, setShowForm, calendarDays, onAddEvent }: EventFormProps) {
+export default function EventForm({ showForm, setShowForm, calendarDays, onAddEvent, eventToEdit, onUpdateEvent }: EventFormProps) {
   const [newTitle, setNewTitle] = useState("")
   const [newStartTime, setNewStartTime] = useState("")
   const [newDuration, setNewDuration] = useState("")
   const [newDate, setNewDate] = useState(
-    calendarDays.find((day) => day.isToday)?.day.toString() || calendarDays[0].day.toString()
+    calendarDays.find((day) => day.isToday)?.day.toString() || 
+    calendarDays[0].day.toString()
   )
   const [newDescription, setNewDescription] = useState("")
   const [selectedColor, setSelectedColor] = useState<"pink" | "mint" | "blue" | "purple" | "orange">("blue")
   const [isRecurring, setIsRecurring] = useState(false)
   const [selectedDays, setSelectedDays] = useState<boolean[]>(Array(7).fill(false))
   const [recurringEndDate, setRecurringEndDate] = useState("")
+  
+  // Update form when eventToEdit changes
+  useEffect(() => {
+    if (eventToEdit) {
+      console.log('Setting form data from event:', eventToEdit);
+      setNewTitle(eventToEdit.title || "")
+      setNewStartTime(eventToEdit.startTime || "")
+      setNewDuration(calculateDuration(eventToEdit.startTime, eventToEdit.endTime))
+      setNewDate(eventToEdit.date?.toString() || "")
+      setNewDescription(eventToEdit.description || "")
+      setSelectedColor(eventToEdit.color || "blue")
+      setIsRecurring(eventToEdit.isRecurring || false)
+      setSelectedDays(getBooleanDays(eventToEdit.recurringDays))
+      setRecurringEndDate(formatDateForInput(eventToEdit.recurringEndDate))
+    } else {
+      resetForm()
+    }
+  }, [eventToEdit])
+
+  // Reset form when it's closed
+  useEffect(() => {
+    if (!showForm) {
+      // Reset only if form is closing
+      resetForm();
+    }
+  }, [showForm]);
+
+  const calculateDuration = (start: string, end: string): string => {
+    const [startHour, startMinute] = start.split(":").map(Number)
+    const [endHour, endMinute] = end.split(":").map(Number)
+    const startMinutes = startHour * 60 + startMinute
+    const endMinutes = endHour * 60 + endMinute
+    return (endMinutes - startMinutes).toString()
+  }
+  
+  const formatDateForInput = (dateString: string | null): string => {
+    if (!dateString) return ""
+    // Ensure the date is in YYYY-MM-DD format expected by date input
+    try {
+      const date = new Date(dateString)
+      return date.toISOString().split('T')[0]
+    } catch (e) {
+      return ""
+    }
+  }
+
+  const getBooleanDays = (binaryDays?: string | null): boolean[] => {
+    if (!binaryDays) return Array(7).fill(false)
+    return binaryDays.split('').map(day => day === '1')
+  }
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const durationMinutes = parseInt(newDuration)
+    if (!newTitle || !newStartTime || isNaN(durationMinutes)) {
+      return
+    }
+    const newEndTime = calculateEndTime(newStartTime, durationMinutes)
+    
+    if (eventToEdit && onUpdateEvent) {
+      // Update existing event
+      onUpdateEvent(eventToEdit.id, {
+        title: newTitle,
+        startTime: newStartTime,
+        endTime: newEndTime,
+        date: isRecurring ? eventToEdit.date : parseInt(newDate), // Keep original date for recurring events
+        description: newDescription || undefined,
+        color: selectedColor,
+        isRecurring,
+        recurringDays: isRecurring ? getBinaryDays() : null,
+        recurringEndDate: isRecurring ? recurringEndDate || null : null
+      });
+    } else {
+      // Create new event
+      onAddEvent({
+        title: newTitle,
+        startTime: newStartTime,
+        endTime: newEndTime,
+        date: parseInt(newDate),
+        description: newDescription || undefined,
+        color: selectedColor,
+        isRecurring,
+        recurringDays: isRecurring ? getBinaryDays() : undefined,
+        recurringEndDate: isRecurring ? recurringEndDate || undefined : undefined
+      });
+    }
+
+    // Reset form
+    resetForm();
+    setShowForm(false);
+  }
+  
+  const resetForm = () => {
+    setNewTitle("")
+    setNewStartTime("")
+    setNewDuration("")
+    setNewDescription("")
+    setSelectedColor("blue")
+    setIsRecurring(false)
+    setSelectedDays(Array(7).fill(false))
+    setRecurringEndDate("")
+    setNewDate(calendarDays.find((day) => day.isToday)?.day.toString() || calendarDays[0].day.toString())
+  }
+
+  const formTitle = eventToEdit ? "Edit Event" : "Add Event"
+  const submitButtonText = eventToEdit ? "Update" : "Add"
 
   // Helper to compute end time from a start time and a duration
   const calculateEndTime = (startTime: string, duration: number): string => {
@@ -58,46 +168,13 @@ export default function EventForm({ showForm, setShowForm, calendarDays, onAddEv
     return selectedDays.map(day => day ? "1" : "0").join("")
   }
 
-  const handleAddEvent = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    const durationMinutes = parseInt(newDuration)
-    if (!newTitle || !newStartTime || isNaN(durationMinutes)) {
-      return
-    }
-    const newEndTime = calculateEndTime(newStartTime, durationMinutes)
-    
-    onAddEvent({
-      title: newTitle,
-      startTime: newStartTime,
-      endTime: newEndTime,
-      date: isRecurring ? undefined : parseInt(newDate),
-      description: newDescription || undefined,
-      color: selectedColor,
-      isRecurring,
-      recurringDays: isRecurring ? getBinaryDays() : undefined,
-      recurringEndDate: isRecurring ? recurringEndDate || undefined : undefined
-    })
-
-    // Reset form
-    setNewTitle("")
-    setNewStartTime("")
-    setNewDuration("")
-    setNewDescription("")
-    setSelectedColor("blue")
-    setIsRecurring(false)
-    setSelectedDays(Array(7).fill(false))
-    setRecurringEndDate("")
-    setNewDate(calendarDays.find((day) => day.isToday)?.day.toString() || calendarDays[0].day.toString())
-    setShowForm(false)
-  }
-
   if (!showForm) return null
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-[#2C2C2C] bg-opacity-50 z-[50]">
       <div className="bg-[#FAF9F6] p-6 rounded-lg shadow-lg w-[480px] border border-[#E2DFD8]">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold text-[#2C2C2C]">Add Event</h2>
+          <h2 className="text-2xl font-bold text-[#2C2C2C]">{formTitle}</h2>
           <label className="flex items-center space-x-2 cursor-pointer">
             <span className="text-sm text-[#2C2C2C]">Recurring</span>
             <input
@@ -108,7 +185,7 @@ export default function EventForm({ showForm, setShowForm, calendarDays, onAddEv
             />
           </label>
         </div>
-        <form onSubmit={handleAddEvent}>
+        <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label htmlFor="title" className="block text-sm font-medium text-[#2C2C2C] mb-2">
               Title
@@ -264,7 +341,7 @@ export default function EventForm({ showForm, setShowForm, calendarDays, onAddEv
               type="submit"
               className="px-5 py-2.5 bg-[#2C2C2C] text-[#FAF9F6] rounded-lg hover:bg-[#403F3E] transition-colors duration-200 focus:outline-none"
             >
-              Add
+              {submitButtonText}
             </button>
           </div>
         </form>

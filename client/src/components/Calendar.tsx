@@ -11,7 +11,7 @@ import { GridLines } from './calendar/GridLines'
 import { CurrentTimeIndicator } from './calendar/CurrentTimeIndicator'
 import { EventsDisplay } from './calendar/EventsDisplay'
 import { EventDetailsModal } from './calendar/EventDetailsModal'
-import { fetchEvents, createEvent, deleteEvent } from '@/services/api'
+import { fetchEvents, createEvent, deleteEvent, updateEvent } from '@/services/api'
 import { EventType } from '@/types'
 
 const HOURS = Array.from({ length: 25 }, (_, i) => {
@@ -45,6 +45,7 @@ export default function Calendar({ showForm, setShowForm, scheduleWithAI, aiStat
   const [showEventDetails, setShowEventDetails] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [eventToEdit, setEventToEdit] = useState<EventType | null>(null)
 
   // Fetch events on component mount
   useEffect(() => {
@@ -232,6 +233,34 @@ export default function Calendar({ showForm, setShowForm, scheduleWithAI, aiStat
     }
   }
 
+  const handleEditEvent = (event: EventType) => {
+    setEventToEdit(event);
+    setShowEventDetails(false);
+    setShowForm(true);
+  };
+
+  const handleUpdateEvent = async (id: string, updatedEventData: any) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      // Optimistic UI update
+      setEvents(prev => prev.map(event => 
+        event.id === id ? { ...event, ...updatedEventData } : event
+      ));
+      
+      // Update on the server
+      await updateEvent(id, updatedEventData);
+      
+      // Clear editing state
+      setEventToEdit(null);
+    } catch (error) {
+      setError('Failed to update event. Please try again.');
+      console.error('Error updating event:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="w-full h-[calc(100vh-32px)] mx-auto p-4 md:pb-8relative bg-[#fbf7f4]">
       {/* Calendar Toolbar */}
@@ -309,6 +338,8 @@ export default function Calendar({ showForm, setShowForm, scheduleWithAI, aiStat
         setShowForm={setShowForm}
         calendarDays={calendarDays}
         onAddEvent={handleAddEvent}
+        eventToEdit={eventToEdit}
+        onUpdateEvent={handleUpdateEvent}
       />
 
       {/* Event Details Modal */}
@@ -317,6 +348,7 @@ export default function Calendar({ showForm, setShowForm, scheduleWithAI, aiStat
         showModal={showEventDetails}
         onClose={() => setShowEventDetails(false)}
         onDelete={handleDeleteEvent}
+        onEdit={handleEditEvent}
       />
     </div>
   )

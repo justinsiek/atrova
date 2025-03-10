@@ -7,6 +7,7 @@ interface EventDetailsModalProps {
   showModal: boolean;
   onClose: () => void;
   onDelete: (id: string) => void;
+  onEdit: (event: EventType) => void;
 }
 
 const formatRecurringDays = (days: string) => {
@@ -22,7 +23,8 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
   event, 
   showModal, 
   onClose, 
-  onDelete 
+  onDelete,
+  onEdit 
 }) => {
   if (!showModal || !event) return null;
 
@@ -89,6 +91,12 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
             className="px-4 py-2 border border-red-300 text-red-600 rounded hover:bg-red-50"
           >
             Delete
+          </button>
+          <button 
+            onClick={() => onEdit(event)}
+            className="px-4 py-2 border border-blue-300 text-blue-600 rounded hover:bg-blue-50"
+          >
+            Edit
           </button>
           <button 
             onClick={onClose}
