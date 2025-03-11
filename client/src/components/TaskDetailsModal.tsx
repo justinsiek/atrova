@@ -8,7 +8,8 @@ interface TaskDetailsModalProps {
   showModal: boolean;
   onClose: () => void;
   onDelete: (id: string) => void;
-  onEdit: (task: Task) => void;
+  onToggleComplete: (taskId: string) => void;
+  onEdit?: (task: Task) => void;
 }
 
 export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ 
@@ -16,6 +17,7 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
   showModal, 
   onClose, 
   onDelete,
+  onToggleComplete,
   onEdit
 }) => {
   if (!showModal || !task) return null;
@@ -141,7 +143,7 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
             Delete
           </button>
           <button 
-            onClick={() => onEdit(task)}
+            onClick={() => onEdit && onEdit(task)}
             className="inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-blue-700 bg-blue-50 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors dark:bg-blue-900 dark:text-blue-200 dark:hover:bg-blue-800"
           >
             Edit

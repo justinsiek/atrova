@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { COLORS } from "@/constants/colors"
+import { Task } from '@/components/sidebar/types'
 
 interface TaskFormProps {
   showForm: boolean
