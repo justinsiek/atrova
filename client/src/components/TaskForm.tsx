@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { COLORS } from "@/constants/colors"
 
 interface TaskFormProps {
@@ -10,32 +10,67 @@ interface TaskFormProps {
     dueDate?: string
     duration?: number
   }) => void
+  taskToEdit?: Task | null
+  onUpdateTask?: (id: string, task: Omit<Task, 'id'>) => void
 }
 
-const TaskForm = ({ showForm, setShowForm, onAddTask }: TaskFormProps) => {
+const TaskForm = ({ showForm, setShowForm, onAddTask, taskToEdit, onUpdateTask }: TaskFormProps) => {
   const [title, setTitle] = useState("")
   const [priority, setPriority] = useState<'low' | 'medium' | 'high' | ''>('')
   const [dueDate, setDueDate] = useState("")
   const [duration, setDuration] = useState("")
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    if (!title.trim()) return
+  useEffect(() => {
+    if (taskToEdit) {
+      setTitle(taskToEdit.title)
+      setPriority(taskToEdit.priority || '')
+      setDueDate(taskToEdit.dueDate || '')
+      setDuration(taskToEdit.duration ? taskToEdit.duration.toString() : '')
+    } else {
+      resetForm()
+    }
+  }, [taskToEdit])
 
-    onAddTask({ 
-      title: title.trim(),
-      priority: priority || undefined,
-      dueDate: dueDate || undefined,
-      duration: duration ? parseInt(duration) : undefined
-    })
-    
-    // Reset form
+  useEffect(() => {
+    if (!showForm) {
+      resetForm()
+    }
+  }, [showForm])
+
+  const resetForm = () => {
     setTitle("")
     setPriority("")
     setDueDate("")
     setDuration("")
+  }
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    if (!title.trim()) return
+
+    const taskData = {
+      title: title.trim(),
+      priority: priority || undefined,
+      dueDate: dueDate || undefined,
+      duration: duration ? parseInt(duration) : undefined
+    }
+
+    if (taskToEdit && onUpdateTask) {
+      onUpdateTask(taskToEdit.id, {
+        ...taskData,
+        completed: taskToEdit.completed,
+        aiScheduled: taskToEdit.aiScheduled
+      })
+    } else {
+      onAddTask(taskData)
+    }
+    
+    resetForm()
     setShowForm(false)
   }
+
+  const formTitle = taskToEdit ? "Edit Task" : "Add Task"
+  const submitButtonText = taskToEdit ? "Update" : "Add Task"
 
   if (!showForm) return null
 
@@ -49,7 +84,7 @@ const TaskForm = ({ showForm, setShowForm, onAddTask }: TaskFormProps) => {
           className="text-2xl font-bold mb-6"
           style={{ color: COLORS.darkBrown }}
         >
-          Add Task
+          {formTitle}
         </h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
@@ -185,7 +220,7 @@ const TaskForm = ({ showForm, setShowForm, onAddTask }: TaskFormProps) => {
               className="px-6 py-3 rounded-lg transition-colors duration-200 focus:outline-none text-white"
               style={{ backgroundColor: COLORS.slate }}
             >
-              Add Task
+              {submitButtonText}
             </button>
           </div>
         </form>

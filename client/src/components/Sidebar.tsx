@@ -24,6 +24,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onNewEvent, scheduleWithAI, aiStatus,
   const [filter, setFilter] = useState<'all' | 'high' | 'medium' | 'low'>('all');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);
 
   // Fetch tasks from the backend on component mount
   useEffect(() => {
@@ -97,6 +98,27 @@ const Sidebar: React.FC<SidebarProps> = ({ onNewEvent, scheduleWithAI, aiStatus,
           task.id === taskId ? updatedTask : task
         ));
       }
+    } catch (error) {
+      setError('Failed to update task. Please try again.');
+      console.error('Error updating task:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleEditTask = (task: Task) => {
+    setTaskToEdit(task);
+    setShowTaskForm(true);
+  };
+
+  const handleUpdateTask = async (id: string, updatedTaskData: Omit<Task, 'id'>) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await updateTask(id, updatedTaskData);
+      setTasks(prevTasks => prevTasks.map(task => 
+        task.id === id ? response.task : task
+      ));
     } catch (error) {
       setError('Failed to update task. Please try again.');
       console.error('Error updating task:', error);
@@ -181,6 +203,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onNewEvent, scheduleWithAI, aiStatus,
           handleToggleComplete={handleToggleComplete}
           handleDeleteTask={handleDeleteTask}
           getRandomColor={getRandomColor}
+          handleEditTask={handleEditTask}
         />
       )}
 
@@ -189,6 +212,8 @@ const Sidebar: React.FC<SidebarProps> = ({ onNewEvent, scheduleWithAI, aiStatus,
         showForm={showTaskForm} 
         setShowForm={setShowTaskForm} 
         onAddTask={handleAddTask} 
+        taskToEdit={taskToEdit}
+        onUpdateTask={handleUpdateTask}
       />
     </div>
   );

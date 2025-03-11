@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import TaskCard from '@/components/TaskCard';
 import { TaskDetailsModal } from '@/components/TaskDetailsModal';
@@ -31,6 +31,23 @@ const TasksList: React.FC<TasksListProps> = ({
   // Add state for the selected task and modal visibility
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [showTaskDetails, setShowTaskDetails] = useState(false);
+  
+  // Add this useEffect to update selectedTask when tasks change
+  useEffect(() => {
+    // If we have a selected task and the tasks array has changed
+    if (selectedTask) {
+      // Find the updated version of the task in the new tasks array
+      const updatedTask = tasks.find(task => task.id === selectedTask.id);
+      
+      // If the task still exists, update selectedTask with the new data
+      if (updatedTask) {
+        setSelectedTask(updatedTask);
+      } else {
+        // If the task was deleted, close the modal
+        setShowTaskDetails(false);
+      }
+    }
+  }, [tasks]); // This effect runs whenever the tasks array changes
   
   // Handler for when a task is clicked
   const handleTaskClick = (task: Task) => {

@@ -8,7 +8,7 @@ interface TaskDetailsModalProps {
   showModal: boolean;
   onClose: () => void;
   onDelete: (id: string) => void;
-  onEdit?: (task: Task) => void;
+  onEdit: (task: Task) => void;
 }
 
 export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ 
@@ -140,14 +140,12 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
           >
             Delete
           </button>
-          {onEdit && (
-            <button 
-              onClick={() => onEdit(task)}
-              className="inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-blue-700 bg-blue-50 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors dark:bg-blue-900 dark:text-blue-200 dark:hover:bg-blue-800"
-            >
-              Edit
-            </button>
-          )}
+          <button 
+            onClick={() => onEdit(task)}
+            className="inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-blue-700 bg-blue-50 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors dark:bg-blue-900 dark:text-blue-200 dark:hover:bg-blue-800"
+          >
+            Edit
+          </button>
           <button 
             onClick={onClose}
             className="inline-flex justify-center items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600"
