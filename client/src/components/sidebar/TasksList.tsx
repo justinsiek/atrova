@@ -1,17 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import TaskCard from '@/components/TaskCard';
+import { TaskDetailsModal } from '@/components/TaskDetailsModal';
 import { COLORS } from '@/constants/colors';
-
-interface Task {
-  id: string;
-  title: string;
-  completed: boolean;
-  aiScheduled?: boolean;
-  dueDate?: string;
-  priority?: 'low' | 'medium' | 'high';
-  duration?: number;
-}
+import { Task } from '@/components/sidebar/types';
 
 interface TasksListProps {
   filteredTasks: Task[];
@@ -22,6 +14,7 @@ interface TasksListProps {
   handleToggleComplete: (taskId: string) => void;
   handleDeleteTask: (taskId: string) => void;
   getRandomColor: () => "pink" | "mint" | "blue" | "purple" | "orange";
+  handleEditTask?: (task: Task) => void;  // Optional edit handler
 }
 
 const TasksList: React.FC<TasksListProps> = ({ 
@@ -32,8 +25,19 @@ const TasksList: React.FC<TasksListProps> = ({
   showCompleted, 
   handleToggleComplete, 
   handleDeleteTask,
-  getRandomColor
+  getRandomColor,
+  handleEditTask
 }) => {
+  // Add state for the selected task and modal visibility
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [showTaskDetails, setShowTaskDetails] = useState(false);
+  
+  // Handler for when a task is clicked
+  const handleTaskClick = (task: Task) => {
+    setSelectedTask(task);
+    setShowTaskDetails(true);
+  };
+  
   return (
     <div className="flex-1 flex flex-col overflow-hidden">    
       <div className="flex-1 overflow-y-auto scrollbar-hide pr-1">
@@ -55,11 +59,23 @@ const TasksList: React.FC<TasksListProps> = ({
                 dueDate={task.dueDate}
                 duration={task.duration}
                 getRandomColor={getRandomColor}
+                onTaskClick={handleTaskClick}  // Add the click handler
+                aiScheduled={task.aiScheduled}
               />
             ))}
           </div>
         )}
       </div>
+      
+      {/* Add the TaskDetailsModal */}
+      <TaskDetailsModal
+        task={selectedTask}
+        showModal={showTaskDetails}
+        onClose={() => setShowTaskDetails(false)}
+        onDelete={handleDeleteTask}
+        onToggleComplete={handleToggleComplete}
+        onEdit={handleEditTask}  // Pass the edit handler if available
+      />
     </div>
   );
 };

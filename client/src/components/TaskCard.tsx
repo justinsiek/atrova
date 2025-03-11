@@ -3,6 +3,7 @@ import { COLORS } from '@/constants/colors';
 import { Check } from 'lucide-react';
 import Event from '@/components/calendar/Event';
 import { EventType } from '@/types';
+import { Task } from '@/components/sidebar/types';
 
 const eventColorMap = {
   pink: COLORS.eventPink,
@@ -12,17 +13,11 @@ const eventColorMap = {
   orange: COLORS.eventOrange
 } as const;
 
-interface TaskCardProps {
-  id: string;
-  title: string;
+interface TaskCardProps extends Task {
   onDelete: (id: string) => void;
   onToggleComplete: (id: string) => void;
-  completed: boolean;
-  aiScheduled?: boolean;
-  dueDate?: string;
-  priority?: 'low' | 'medium' | 'high';
-  duration?: number;
   getRandomColor: () => "pink" | "mint" | "blue" | "purple" | "orange";
+  onTaskClick?: (task: Task) => void;
 }
 
 const TaskCard: React.FC<TaskCardProps> = ({ 
@@ -35,7 +30,8 @@ const TaskCard: React.FC<TaskCardProps> = ({
   dueDate,
   priority,
   duration,
-  getRandomColor
+  getRandomColor,
+  onTaskClick
 }) => {
   const dragPreviewRef = useRef<HTMLDivElement>(null);
   const [dragOffset, setDragOffset] = useState<{ x: number, y: number } | null>(null);
@@ -74,6 +70,17 @@ const TaskCard: React.FC<TaskCardProps> = ({
     }
   };
 
+  // Create a task object that can be passed to the click handler
+  const taskData: Task = {
+    id,
+    title,
+    completed,
+    aiScheduled,
+    dueDate,
+    priority,
+    duration
+  };
+  
   // Handle drag start event
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
     // Set the drag data with task information
@@ -130,6 +137,19 @@ const TaskCard: React.FC<TaskCardProps> = ({
     setDragOffset(null);
   };
   
+  // Handle task card click
+  const handleTaskClick = (e: React.MouseEvent) => {
+    // Prevent click from triggering if we're clicking on buttons inside the card
+    if ((e.target as HTMLElement).closest('button')) {
+      return;
+    }
+    
+    // Only trigger the click if we have a handler
+    if (onTaskClick) {
+      onTaskClick(taskData);
+    }
+  };
+  
   return (
     <>
       {/* Hidden drag preview element */}
@@ -151,11 +171,12 @@ const TaskCard: React.FC<TaskCardProps> = ({
 
       {/* Actual task card */}
       <div 
-        className={`p-3 rounded-md shadow-sm relative ${completed ? 'opacity-70' : ''} flex items-start`}
+        className={`p-3 rounded-md shadow-sm relative ${completed ? 'opacity-70' : ''} flex items-start cursor-pointer`}
         style={{ backgroundColor: '#333232', border: `1px solid ${COLORS.sidebarBorder}` }}
         draggable={!completed && !aiScheduled}
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
+        onClick={handleTaskClick}
       >
         {/* Priority indicator */}
         <div 
