@@ -272,7 +272,10 @@ export default function Calendar({ showForm, setShowForm, scheduleWithAI, aiStat
         goToToday={goToToday}
         showTimeLabels={showTimeLabels}
         setShowTimeLabels={setShowTimeLabels}
-        addEvent={() => setShowForm(true)}
+        addEvent={() => {
+          setEventToEdit(null);
+          setShowForm(true);
+        }}
         weekOffset={weekOffset}
       />
       
