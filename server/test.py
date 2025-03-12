@@ -1,10 +1,10 @@
 import os
 import logging
-from telegram import Update
-from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
+import requests
+import time
 from dotenv import load_dotenv
 
-# Load environment variables from .env file
+# Load environment variables
 load_dotenv()
 
 # Configure logging
@@ -14,55 +14,75 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Get the bot token from environment variables
+# Get bot token
 BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
 if not BOT_TOKEN:
     raise ValueError("No TELEGRAM_BOT_TOKEN found in .env file")
 
-# Define command handler functions
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Send a message when the command /start is issued."""
-    user = update.effective_user
-    await update.message.reply_text(f'Hi {user.first_name}! I am your Atrova task assistant. Send me a message to add tasks.')
-
-async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Send a message when the command /help is issued."""
-    await update.message.reply_text('You can send me messages like: "Remind me to buy groceries tomorrow at 5pm"')
-
-async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Echo the user message and process it."""
-    message_text = update.message.text
-    user = update.effective_user
+# Simple polling implementation
+class TelegramBot:
+    def __init__(self, token):
+        self.token = token
+        self.api_url = f"https://api.telegram.org/bot{token}/"
+        self.offset = 0
+        
+    def get_updates(self):
+        params = {
+            'offset': self.offset,
+            'timeout': 30
+        }
+        response = requests.get(f"{self.api_url}getUpdates", params=params)
+        return response.json()
     
-    # Log the message
-    logger.info(f"Received message from {user.first_name} ({user.id}): {message_text}")
-    print(f"Message: {message_text}")
+    def send_message(self, chat_id, text):
+        params = {
+            'chat_id': chat_id,
+            'text': text
+        }
+        response = requests.post(f"{self.api_url}sendMessage", params=params)
+        return response.json()
     
-    # In the future, this is where you'll process the message with Groq
-    # For now, just echo it back
-    await update.message.reply_text(f"I received your message: {message_text}")
+    def process_message(self, message):
+        chat_id = message['chat']['id']
+        text = message.get('text', '')
+        user = message.get('from', {})
+        username = user.get('first_name', 'User')
+        
+        logger.info(f"Message from {username} ({user.get('id')}): {text}")
+        print(f"Message: {text}")
+        
+        # Handle commands
+        if text.startswith('/start'):
+            return self.send_message(chat_id, f"Hi {username}! I am your Atrova task assistant. Send me a message to add tasks.")
+        elif text.startswith('/help'):
+            return self.send_message(chat_id, "You can send me messages like: \"Remind me to buy groceries tomorrow at 5pm\"")
+        else:
+            # Echo the message (replace with Groq integration later)
+            return self.send_message(chat_id, f"I received your message: {text}")
     
-    # In the future: Parse the message, extract task data, and add to your system
-    # task_data = process_with_groq(message_text)
-    # add_task_to_database(user.id, task_data)
+    def run(self):
+        print("Bot is starting with polling...")
+        print("Bot is running! Press Ctrl+C to stop.")
+        
+        try:
+            while True:
+                updates = self.get_updates()
+                
+                if updates.get('ok') and updates.get('result'):
+                    for update in updates['result']:
+                        if 'message' in update:
+                            self.process_message(update['message'])
+                        
+                        # Update offset to acknowledge processed updates
+                        self.offset = update['update_id'] + 1
+                
+                time.sleep(1)
+        except KeyboardInterrupt:
+            print("Bot stopped")
 
 def main():
-    """Set up and run the bot with polling."""
-    print("Bot is starting with polling...")
-    
-    # Create the Application
-    application = Application.builder().token(BOT_TOKEN).build()
-
-    # Register handlers
-    application.add_handler(CommandHandler("start", start))
-    application.add_handler(CommandHandler("help", help_command))
-    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
-
-    # Start the Bot with polling
-    print("Bot is running! Press Ctrl+C to stop.")
-    application.run_polling(allowed_updates=Update.ALL_TYPES)
-    
-    print("Bot stopped")
+    bot = TelegramBot(BOT_TOKEN)
+    bot.run()
 
 if __name__ == '__main__':
-    main() 
+    main()
