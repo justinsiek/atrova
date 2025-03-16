@@ -2,6 +2,7 @@ import os
 import logging
 import requests
 import time
+import json
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -19,12 +20,68 @@ BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
 if not BOT_TOKEN:
     raise ValueError("No TELEGRAM_BOT_TOKEN found in .env file")
 
+# Get Hugging Face API token
+HF_API_TOKEN = os.getenv('HUGGINGFACE_API_TOKEN')
+if not HF_API_TOKEN:
+    raise ValueError("No HUGGINGFACE_API_TOKEN found in .env file")
+
 # Simple polling implementation
 class TelegramBot:
     def __init__(self, token):
         self.token = token
         self.api_url = f"https://api.telegram.org/bot{token}/"
         self.offset = 0
+        
+        # Setup Hugging Face API parameters
+        self.setup_model()
+        
+    def setup_model(self):
+        print("Setting up Llama 3.2 model API...")
+        # Store API information directly
+        self.hf_api_url = "https://api-inference.huggingface.co/models/meta-llama/Llama-3.2-1B-Instruct"
+        self.hf_headers = {"Authorization": f"Bearer {HF_API_TOKEN}"}
+        print("Model API setup successfully!")
+        
+    def process_with_llama(self, text):
+        try:
+            # Format user input as Llama chat prompt
+            prompt = text
+            
+            # Create payload for the API request
+            payload = {
+                "inputs": prompt,
+                "parameters": {
+                    "max_new_tokens": 512,
+                    "temperature": 0.05,
+                    "do_sample": True,
+                    "return_full_text": False
+                }
+            }
+            
+            # Make the API request
+            response = requests.post(
+                self.hf_api_url,
+                headers=self.hf_headers,
+                json=payload
+            )
+            
+            # Check for successful response
+            if response.status_code == 200:
+                result = response.json()
+                
+                # Extract the generated text
+                if isinstance(result, list) and len(result) > 0:
+                    return result[0]["generated_text"]
+                else:
+                    return str(result)
+            else:
+                error_msg = f"API error: {response.status_code} - {response.text}"
+                logger.error(error_msg)
+                return f"Sorry, I couldn't process that request. {error_msg}"
+            
+        except Exception as e:
+            logger.error(f"Error processing with Llama model: {e}")
+            return f"Error processing your request: {str(e)}"
         
     def get_updates(self):
         params = {
@@ -57,8 +114,9 @@ class TelegramBot:
         elif text.startswith('/help'):
             return self.send_message(chat_id, "You can send me messages like: \"Remind me to buy groceries tomorrow at 5pm\"")
         else:
-            # Echo the message (replace with Groq integration later)
-            return self.send_message(chat_id, f"I received your message: {text}")
+            # Just process with Llama 3.2 and return the direct response
+            model_response = self.process_with_llama(text)
+            return self.send_message(chat_id, model_response)
     
     def run(self):
         print("Bot is starting with polling...")
