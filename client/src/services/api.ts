@@ -1,5 +1,5 @@
 // API endpoints
-const API_URL = process.env.API_URL;
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 // Import the necessary types
 import { Task } from '@/components/sidebar/types';

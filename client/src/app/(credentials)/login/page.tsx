@@ -7,7 +7,7 @@ import { Mail, Lock, Sparkles } from 'lucide-react'
 import { COLORS } from "@/constants/colors"
 import { useAuth } from '@/contexts/AuthContext'
 
-const API_URL = process.env.API_URL;
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 const domine = Domine({
   subsets: ['latin'],
