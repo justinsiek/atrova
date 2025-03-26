@@ -11,7 +11,7 @@ import { GridLines } from './calendar/GridLines'
 import { CurrentTimeIndicator } from './calendar/CurrentTimeIndicator'
 import { EventsDisplay } from './calendar/EventsDisplay'
 import { EventDetailsModal } from './calendar/EventDetailsModal'
-import { fetchEvents, createEvent, deleteEvent, updateEvent } from '@/services/api'
+import { createEvent, deleteEvent, updateEvent } from '@/services/api'
 import { EventType } from '@/types'
 
 const HOURS = Array.from({ length: 25 }, (_, i) => {
@@ -33,11 +33,12 @@ interface CalendarProps {
   scheduleWithAI: () => void;
   aiStatus: AI_STATUS;
   getRandomColor: () => "pink" | "mint" | "blue" | "purple" | "orange";
+  initialEvents: EventType[];
 }
 
-export default function Calendar({ showForm, setShowForm, scheduleWithAI, aiStatus, getRandomColor }: CalendarProps) {
+export default function Calendar({ showForm, setShowForm, scheduleWithAI, aiStatus, getRandomColor, initialEvents }: CalendarProps) {
   const [currentTime, setCurrentTime] = useState(new Date())
-  const [events, setEvents] = useState<EventType[]>([])
+  const [events, setEvents] = useState<EventType[]>(initialEvents || [])
   const [view, setView] = useState<'week' | 'day'>('week')
   const [weekOffset, setWeekOffset] = useState(0)
   const [showTimeLabels, setShowTimeLabels] = useState(true)
@@ -47,24 +48,12 @@ export default function Calendar({ showForm, setShowForm, scheduleWithAI, aiStat
   const [error, setError] = useState<string | null>(null)
   const [eventToEdit, setEventToEdit] = useState<EventType | null>(null)
 
-  // Fetch events on component mount
+  // Update events when initialEvents changes
   useEffect(() => {
-    const loadEvents = async () => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const data = await fetchEvents();
-        setEvents(data);
-      } catch (error) {
-        setError('Failed to load events. Please try again later.');
-        console.error('Error fetching events:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadEvents();
-  }, []);
+    if (initialEvents) {
+      setEvents(initialEvents);
+    }
+  }, [initialEvents]);
 
   // Update current time every minute
   useEffect(() => {

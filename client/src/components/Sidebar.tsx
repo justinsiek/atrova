@@ -7,7 +7,7 @@ import ActionButtons from './sidebar/ActionButtons';
 import TaskFilters from './sidebar/TaskFilters';
 import TaskProgressBar from './sidebar/TaskProgressBar';
 import TasksList from './sidebar/TasksList';
-import { fetchTasks, createTask, updateTask, deleteTask } from '@/services/api';
+import { createTask, updateTask, deleteTask } from '@/services/api';
 
 interface SidebarProps {
   onNewEvent: () => void;
@@ -15,10 +15,18 @@ interface SidebarProps {
   aiStatus: 'idle' | 'loading' | 'success' | 'error';
   unscheduledTasks: number;
   getRandomColor: () => "pink" | "mint" | "blue" | "purple" | "orange";
+  initialTasks: Task[];
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ onNewEvent, scheduleWithAI, aiStatus, unscheduledTasks, getRandomColor }) => {
-  const [tasks, setTasks] = useState<Task[]>([]);
+const Sidebar: React.FC<SidebarProps> = ({ 
+  onNewEvent, 
+  scheduleWithAI, 
+  aiStatus, 
+  unscheduledTasks, 
+  getRandomColor,
+  initialTasks 
+}) => {
+  const [tasks, setTasks] = useState<Task[]>(initialTasks || []);
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [showCompleted, setShowCompleted] = useState(false);
   const [filter, setFilter] = useState<'all' | 'high' | 'medium' | 'low'>('all');
@@ -26,24 +34,12 @@ const Sidebar: React.FC<SidebarProps> = ({ onNewEvent, scheduleWithAI, aiStatus,
   const [error, setError] = useState<string | null>(null);
   const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);
 
-  // Fetch tasks from the backend on component mount
+  // Update tasks when initialTasks changes
   useEffect(() => {
-    const loadTasks = async () => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const data = await fetchTasks();
-        setTasks(data);
-      } catch (error) {
-        setError('Failed to load tasks. Please try again later.');
-        console.error('Error fetching tasks:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadTasks();
-  }, []);
+    if (initialTasks) {
+      setTasks(initialTasks);
+    }
+  }, [initialTasks]);
 
   const handleAddTask = async (task: { 
     title: string, 

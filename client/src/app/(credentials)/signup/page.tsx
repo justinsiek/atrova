@@ -6,6 +6,8 @@ import Link from 'next/link'
 import { COLORS } from "@/constants/colors"
 import { Mail, Lock, User, ChevronRight, Sparkles } from 'lucide-react'
 
+const API_URL = process.env.API_URL;
+
 const domine = Domine({
   subsets: ['latin'],
   weight: '700',
@@ -33,7 +35,7 @@ const SignupPage = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/signup', {
+      const response = await fetch(`${API_URL}/auth/signup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

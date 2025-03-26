@@ -21,8 +21,8 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
         onClick={onNewEvent}
         className="w-full py-2 px-4 rounded-md transition-transform hover:scale-[1.02] shadow-sm flex items-center justify-center"
         style={{ 
-          backgroundColor: COLORS.paperWhite, 
-          color: COLORS.darkBrown
+          backgroundColor: COLORS.accent1, 
+          color: COLORS.paperWhite
         }}
       >
         <Calendar className="w-4 h-4 mr-2" />
@@ -39,29 +39,6 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
       >
         <Plus className="w-4 h-4 mr-2" />
         Add Task
-      </button>
-
-      <button 
-        onClick={scheduleWithAI}
-        disabled={aiStatus === 'loading'}
-        className="w-full py-2 px-4 rounded-md transition-transform hover:scale-[1.02] shadow-sm flex items-center justify-center"
-        style={{ 
-          backgroundColor: aiStatus === 'loading' ? COLORS.accent3 : COLORS.accent1,
-          color: 'white',
-          opacity: aiStatus === 'loading' ? 0.7 : 1
-        }}
-      >
-        {aiStatus === 'loading' ? (
-          <>
-            <Loader className="animate-spin w-4 h-4 mr-2" />
-            Scheduling...
-          </>
-        ) : (
-          <>
-            <Sparkles className="w-4 h-4 mr-2" />
-            Schedule with AI
-          </>
-        )}
       </button>
     </div>
   );

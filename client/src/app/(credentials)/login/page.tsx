@@ -7,6 +7,8 @@ import { Mail, Lock, Sparkles } from 'lucide-react'
 import { COLORS } from "@/constants/colors"
 import { useAuth } from '@/contexts/AuthContext'
 
+const API_URL = process.env.API_URL;
+
 const domine = Domine({
   subsets: ['latin'],
   weight: '700',
@@ -22,7 +24,7 @@ const LoginPage = () => {
     e.preventDefault();
     
     try {
-      const response = await fetch('http://localhost:5000/api/auth/login', {
+      const response = await fetch(`${API_URL}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

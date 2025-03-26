@@ -44,8 +44,8 @@ def get_tasks():
         if not user_id:
             return jsonify({'error': 'Unauthorized'}), 401
             
-        # With RLS policies, Supabase will automatically filter tasks by user_id
-        response = supabase.table("tasks").select("*").execute()
+        # Explicitly filter by user_id instead of relying only on RLS
+        response = supabase.table("tasks").select("*").eq("user_id", user_id).execute()
         return jsonify(response.data)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -109,8 +109,8 @@ def get_events():
         if not user_id:
             return jsonify({'error': 'Unauthorized'}), 401
             
-        # With RLS policies, Supabase will automatically filter events by user_id
-        response = supabase.table("events").select("*").execute()
+        # Explicitly filter by user_id instead of relying only on RLS
+        response = supabase.table("events").select("*").eq("user_id", user_id).execute()
         return jsonify(response.data)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
