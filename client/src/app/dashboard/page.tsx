@@ -9,6 +9,7 @@ import { COLORS } from "@/constants/colors";
 import { Task } from "@/components/sidebar/types";
 import { EventType } from "@/types";
 import { fetchTasks, fetchEvents } from "@/services/api";
+import LoadingAnimation from "@/components/LoadingAnimation";
 
 // Define the color options to match the available event colors
 const EVENT_COLORS = ["pink", "mint", "blue", "purple", "orange"] as const;
@@ -85,7 +86,7 @@ export default function Page() {
 
   // Show loading while auth state is being determined
   if (isLoading) {
-    return <div className="flex h-screen items-center justify-center">Loading...</div>;
+    return <LoadingAnimation message="Authenticating..." />;
   }
 
   // Don't render anything if not authenticated
@@ -95,7 +96,7 @@ export default function Page() {
 
   // Show loading while data is being loaded
   if (isDataLoading) {
-    return <div className="flex h-screen items-center justify-center">Loading your tasks and events...</div>;
+    return <LoadingAnimation message="Loading tasks and events..." />;
   }
 
   // Show error message if data loading failed

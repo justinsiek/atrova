@@ -13,6 +13,7 @@ import { EventsDisplay } from './calendar/EventsDisplay'
 import { EventDetailsModal } from './calendar/EventDetailsModal'
 import { createEvent, deleteEvent, updateEvent } from '@/services/api'
 import { EventType } from '@/types'
+import { COLORS } from '@/constants/colors'
 
 const HOURS = Array.from({ length: 25 }, (_, i) => {
   if (i === 24) return "00:00"
@@ -297,7 +298,45 @@ export default function Calendar({ showForm, setShowForm, scheduleWithAI, aiStat
             {/* Loading state */}
             {isLoading && events.length === 0 ? (
               <div className="col-span-7 flex justify-center items-center mt-10">
-                <div className="text-gray-500">Loading events...</div>
+                <div className="flex space-x-2">
+                  {/* Four colored squares in a row */}
+                  <div 
+                    className="h-4 w-4 rounded-md animate-pulse"
+                    style={{ 
+                      backgroundColor: COLORS.eventPink,
+                      border: '2px solid #e3b3ac',
+                      animationDelay: '0ms',
+                      animationDuration: '1500ms'
+                    }}
+                  />
+                  <div 
+                    className="h-4 w-4 rounded-md animate-pulse"
+                    style={{ 
+                      backgroundColor: COLORS.eventMint,
+                      border: '2px solid #bacbb7',
+                      animationDelay: '300ms',
+                      animationDuration: '1500ms'
+                    }}
+                  />
+                  <div 
+                    className="h-4 w-4 rounded-md animate-pulse"
+                    style={{ 
+                      backgroundColor: COLORS.eventBlue,
+                      border: '2px solid #b6cede',
+                      animationDelay: '600ms',
+                      animationDuration: '1500ms'
+                    }}
+                  />
+                  <div 
+                    className="h-4 w-4 rounded-md animate-pulse"
+                    style={{ 
+                      backgroundColor: COLORS.eventOrange,
+                      border: '2px solid #e7c3a7',
+                      animationDelay: '900ms',
+                      animationDuration: '1500ms'
+                    }}
+                  />
+                </div>
               </div>
             ) : (
               /* Events Display */

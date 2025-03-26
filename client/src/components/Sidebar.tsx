@@ -8,6 +8,7 @@ import TaskFilters from './sidebar/TaskFilters';
 import TaskProgressBar from './sidebar/TaskProgressBar';
 import TasksList from './sidebar/TasksList';
 import { createTask, updateTask, deleteTask } from '@/services/api';
+import LoadingAnimation from "@/components/LoadingAnimation";
 
 interface SidebarProps {
   onNewEvent: () => void;
@@ -187,7 +188,45 @@ const Sidebar: React.FC<SidebarProps> = ({
       {/* Tasks List with loading state */}
       {isLoading && tasks.length === 0 ? (
         <div className="flex-1 flex items-center justify-center">
-          <div className="text-white">Loading tasks...</div>
+          <div className="flex space-x-2">
+            {/* Four colored squares in a row */}
+            <div 
+              className="h-4 w-4 rounded-md animate-pulse"
+              style={{ 
+                backgroundColor: COLORS.eventPink,
+                border: '2px solid #e3b3ac',
+                animationDelay: '0ms',
+                animationDuration: '1500ms'
+              }}
+            />
+            <div 
+              className="h-4 w-4 rounded-md animate-pulse"
+              style={{ 
+                backgroundColor: COLORS.eventMint,
+                border: '2px solid #bacbb7',
+                animationDelay: '300ms',
+                animationDuration: '1500ms'
+              }}
+            />
+            <div 
+              className="h-4 w-4 rounded-md animate-pulse"
+              style={{ 
+                backgroundColor: COLORS.eventBlue,
+                border: '2px solid #b6cede',
+                animationDelay: '600ms',
+                animationDuration: '1500ms'
+              }}
+            />
+            <div 
+              className="h-4 w-4 rounded-md animate-pulse"
+              style={{ 
+                backgroundColor: COLORS.eventOrange,
+                border: '2px solid #e7c3a7',
+                animationDelay: '900ms',
+                animationDuration: '1500ms'
+              }}
+            />
+          </div>
         </div>
       ) : (
         <TasksList 
