@@ -4,14 +4,19 @@ import { motion } from 'framer-motion';
 interface CurrentTimeIndicatorProps {
   currentTime: Date;
   showIndicator: boolean;
+  hourHeight?: number;
 }
 
-export const CurrentTimeIndicator: React.FC<CurrentTimeIndicatorProps> = ({ currentTime, showIndicator }) => {
+export const CurrentTimeIndicator: React.FC<CurrentTimeIndicatorProps> = ({ 
+  currentTime, 
+  showIndicator,
+  hourHeight = 80
+}) => {
   if (!showIndicator) return null;
 
   const getCurrentTimePosition = () => {
     const minutesSinceMidnight = currentTime.getHours() * 60 + currentTime.getMinutes();
-    return (minutesSinceMidnight * 2) + 32 - 10;
+    return (minutesSinceMidnight * hourHeight/60) + 32 - 10;
   };
 
   return (

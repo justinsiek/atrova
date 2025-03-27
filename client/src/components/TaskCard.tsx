@@ -18,6 +18,7 @@ interface TaskCardProps extends Task {
   onToggleComplete: (id: string) => void;
   getRandomColor: () => "pink" | "mint" | "blue" | "purple" | "orange";
   onTaskClick?: (task: Task) => void;
+  hourHeight?: number;
 }
 
 const TaskCard: React.FC<TaskCardProps> = ({ 
@@ -31,7 +32,8 @@ const TaskCard: React.FC<TaskCardProps> = ({
   priority,
   duration,
   getRandomColor,
-  onTaskClick
+  onTaskClick,
+  hourHeight = 80
 }) => {
   const dragPreviewRef = useRef<HTMLDivElement>(null);
   const [dragOffset, setDragOffset] = useState<{ x: number, y: number } | null>(null);
@@ -59,7 +61,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
   // Get event style for preview
   const previewStyle = {
     top: '0',
-    height: `${(duration || 60) * 2}px`,
+    height: `${(duration || 60) * (hourHeight/60)}px`,
     className: `absolute rounded-lg p-3 border shadow-sm`,
     style: {
       width: 'calc(100% - 0.5rem)',
@@ -90,7 +92,8 @@ const TaskCard: React.FC<TaskCardProps> = ({
       priority,
       duration: duration || 60,
       color: eventColor,
-      description: `Task: ${title}`
+      description: `Task: ${title}`,
+      hourHeight // Include hourHeight in the drag data
     });
     
     e.dataTransfer.setData('application/json', taskData);

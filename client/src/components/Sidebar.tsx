@@ -17,6 +17,7 @@ interface SidebarProps {
   unscheduledTasks: number;
   getRandomColor: () => "pink" | "mint" | "blue" | "purple" | "orange";
   initialTasks: Task[];
+  hourHeight?: number;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ 
@@ -25,7 +26,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   aiStatus, 
   unscheduledTasks, 
   getRandomColor,
-  initialTasks 
+  initialTasks,
+  hourHeight = 80
 }) => {
   const [tasks, setTasks] = useState<Task[]>(initialTasks || []);
   const [showTaskForm, setShowTaskForm] = useState(false);
@@ -239,6 +241,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           handleDeleteTask={handleDeleteTask}
           getRandomColor={getRandomColor}
           handleEditTask={handleEditTask}
+          hourHeight={hourHeight}
         />
       )}
 

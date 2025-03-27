@@ -17,13 +17,15 @@ interface EventsDisplayProps {
   events: EventType[];
   onEventClick: (event: EventType) => void;
   onEventAdd?: (event: EventType) => void;
+  hourHeight?: number;
 }
 
 export const EventsDisplay: React.FC<EventsDisplayProps> = ({ 
   calendarDays, 
   events, 
   onEventClick,
-  onEventAdd
+  onEventAdd,
+  hourHeight = 80
 }) => {
   // Track which day is being dragged over
   const [dragOverDay, setDragOverDay] = useState<number | null>(null);
@@ -46,8 +48,8 @@ export const EventsDisplay: React.FC<EventsDisplayProps> = ({
     const [startHour, startMinute] = event.startTime.split(":").map(Number);
     const [endHour, endMinute] = event.endTime.split(":").map(Number);
 
-    const startOffset = (startHour * 60 + startMinute) * 2;
-    const duration = ((endHour - startHour) * 60 + (endMinute - startMinute)) * 2;
+    const startOffset = (startHour * 60 + startMinute) * hourHeight/60;
+    const duration = ((endHour - startHour) * 60 + (endMinute - startMinute)) * hourHeight/60;
 
     return {
       top: `${startOffset}px`,
@@ -111,6 +113,9 @@ export const EventsDisplay: React.FC<EventsDisplayProps> = ({
         return;
       }
 
+      // Use the taskData's hourHeight if available, otherwise use the component prop
+      const taskHourHeight = taskData.hourHeight || hourHeight;
+
       // Get the drop position (time) based on Y coordinate
       const dropRect = e.currentTarget.getBoundingClientRect();
       let dropY = e.clientY - dropRect.top;
@@ -121,7 +126,7 @@ export const EventsDisplay: React.FC<EventsDisplayProps> = ({
       }
       
       // Calculate the time (in minutes since start of day)
-      const minutesSinceMidnight = Math.floor(dropY / 2);
+      const minutesSinceMidnight = Math.floor(dropY / (taskHourHeight/60));
       const dropHour = Math.floor(minutesSinceMidnight / 60);
       const dropMinute = minutesSinceMidnight % 60;
       
@@ -212,7 +217,8 @@ export const EventsDisplay: React.FC<EventsDisplayProps> = ({
       {calendarDays.map((day) => (
         <div 
           key={day.day} 
-          className="relative h-[2880px]"
+          className="relative" 
+          style={{ height: `${24 * hourHeight}px` }}
           onDrop={(e) => {
             handleDrop(e, day);
             handleDragEnd();
@@ -227,7 +233,7 @@ export const EventsDisplay: React.FC<EventsDisplayProps> = ({
               className="absolute left-1 right-1 rounded-lg p-3 border shadow-sm pointer-events-none"
               style={{
                 top: `${dropPosition.y}px`,
-                height: `${dropPosition.duration * 2}px`,
+                height: `${dropPosition.duration * hourHeight/60}px`,
                 backgroundColor: dragData.color === 'pink' ? COLORS.eventPink :
                                dragData.color === 'mint' ? COLORS.eventMint :
                                dragData.color === 'blue' ? COLORS.eventBlue :

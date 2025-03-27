@@ -15,6 +15,7 @@ interface TasksListProps {
   handleDeleteTask: (taskId: string) => void;
   getRandomColor: () => "pink" | "mint" | "blue" | "purple" | "orange";
   handleEditTask?: (task: Task) => void;  // Optional edit handler
+  hourHeight?: number;
 }
 
 const TasksList: React.FC<TasksListProps> = ({ 
@@ -26,7 +27,8 @@ const TasksList: React.FC<TasksListProps> = ({
   handleToggleComplete, 
   handleDeleteTask,
   getRandomColor,
-  handleEditTask
+  handleEditTask,
+  hourHeight = 80
 }) => {
   // Add state for the selected task and modal visibility
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
@@ -78,6 +80,7 @@ const TasksList: React.FC<TasksListProps> = ({
                 getRandomColor={getRandomColor}
                 onTaskClick={handleTaskClick}  // Add the click handler
                 aiScheduled={task.aiScheduled}
+                hourHeight={hourHeight}
               />
             ))}
           </div>

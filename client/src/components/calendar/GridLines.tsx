@@ -10,17 +10,25 @@ interface Day {
 
 interface GridLinesProps {
   calendarDays: Day[];
+  hourHeight?: number;
 }
 
 const GRID_HOURS = Array.from({ length: 24 }, (_, i) => i);
 
-export const GridLines: React.FC<GridLinesProps> = ({ calendarDays }) => {
+export const GridLines: React.FC<GridLinesProps> = ({ calendarDays, hourHeight = 80 }) => {
   return (
     <div className="absolute inset-x-0 top-8 grid grid-cols-7 gap-0 pointer-events-none">
       {calendarDays.map((day) => (
         <div key={day.day} className="relative">
           {GRID_HOURS.map((i) => (
-            <div key={i} className="absolute left-0 right-0 h-[120px]" style={{ top: `${i * 120}px` }}>
+            <div 
+              key={i} 
+              className="absolute left-0 right-0" 
+              style={{ 
+                top: `${i * hourHeight}px`, 
+                height: `${hourHeight}px` 
+              }}
+            >
               <div className={`border-t border-[#ceccc3] w-full`} />
               {i === 23 && (
                 <div className="absolute bottom-0 left-0 right-0">

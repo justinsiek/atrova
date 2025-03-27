@@ -35,9 +35,18 @@ interface CalendarProps {
   aiStatus: AI_STATUS;
   getRandomColor: () => "pink" | "mint" | "blue" | "purple" | "orange";
   initialEvents: EventType[];
+  hourHeight?: number; // Optional to maintain backwards compatibility
 }
 
-export default function Calendar({ showForm, setShowForm, scheduleWithAI, aiStatus, getRandomColor, initialEvents }: CalendarProps) {
+export default function Calendar({ 
+  showForm, 
+  setShowForm, 
+  scheduleWithAI, 
+  aiStatus, 
+  getRandomColor, 
+  initialEvents,
+  hourHeight = 80 // Default to 80 if not provided
+}: CalendarProps) {
   const [currentTime, setCurrentTime] = useState(new Date())
   const [events, setEvents] = useState<EventType[]>(initialEvents || [])
   const [view, setView] = useState<'week' | 'day'>('week')
@@ -130,7 +139,7 @@ export default function Calendar({ showForm, setShowForm, scheduleWithAI, aiStat
   const scrollToEvent = (startTime: string) => {
     const [hours, minutes] = startTime.split(':').map(Number)
     const minutesSinceMidnight = hours * 60 + minutes
-    const position = (minutesSinceMidnight * 2) + 32
+    const position = (minutesSinceMidnight * hourHeight/60) + 32
     
     const scrollContainer = document.querySelector('.calendar-scroll')
     if (scrollContainer) {
@@ -200,7 +209,7 @@ export default function Calendar({ showForm, setShowForm, scheduleWithAI, aiStat
 
   const getCurrentTimePosition = () => {
     const minutesSinceMidnight = currentTime.getHours() * 60 + currentTime.getMinutes()
-    return (minutesSinceMidnight * 2) + 32 - 10
+    return (minutesSinceMidnight * hourHeight/60) + 32 - 10
   }
 
   const handleEventClick = (event: EventType) => {
@@ -283,16 +292,17 @@ export default function Calendar({ showForm, setShowForm, scheduleWithAI, aiStat
       <div className="h-[calc(100vh-200px)] overflow-y-auto relative [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] calendar-scroll">
         <div className="relative ml-16">
           {/* Time Labels */}
-          <TimeLabels showTimeLabels={showTimeLabels} />
+          <TimeLabels showTimeLabels={showTimeLabels} hourHeight={hourHeight} />
 
           <div className="grid grid-cols-7 pt-8">
             {/* Grid Lines */}
-            <GridLines calendarDays={calendarDays} />
+            <GridLines calendarDays={calendarDays} hourHeight={hourHeight} />
 
             {/* Current Time Indicator */}
             <CurrentTimeIndicator 
               currentTime={currentTime} 
-              showIndicator={calendarDays.some(day => day.isToday)} 
+              showIndicator={calendarDays.some(day => day.isToday)}
+              hourHeight={hourHeight}
             />
 
             {/* Loading state */}
@@ -344,6 +354,7 @@ export default function Calendar({ showForm, setShowForm, scheduleWithAI, aiStat
                 calendarDays={calendarDays}
                 events={events}
                 onEventClick={handleEventClick}
+                hourHeight={hourHeight}
                 onEventAdd={(newEvent) => {
                   handleAddEvent({
                     title: newEvent.title,

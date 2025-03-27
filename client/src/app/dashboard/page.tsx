@@ -11,6 +11,9 @@ import { EventType } from "@/types";
 import { fetchTasks, fetchEvents } from "@/services/api";
 import LoadingAnimation from "@/components/LoadingAnimation";
 
+// Central configuration for calendar hour height
+const HOUR_HEIGHT = 75;
+
 // Define the color options to match the available event colors
 const EVENT_COLORS = ["pink", "mint", "blue", "purple", "orange"] as const;
 type EventColor = typeof EVENT_COLORS[number];
@@ -123,6 +126,7 @@ export default function Page() {
         unscheduledTasks={3}
         getRandomColor={getRandomColor}
         initialTasks={tasks}
+        hourHeight={HOUR_HEIGHT}
       />
       <div className="flex-1">
         <Calendar 
@@ -132,6 +136,7 @@ export default function Page() {
           aiStatus={aiStatus}
           getRandomColor={getRandomColor}
           initialEvents={events}
+          hourHeight={HOUR_HEIGHT}
         />
       </div>
     </div>
