@@ -35,7 +35,8 @@ export const EventsDisplay: React.FC<EventsDisplayProps> = ({
   const [dragData, setDragData] = useState<{
     title: string, 
     duration: number,
-    color: "pink" | "mint" | "blue" | "purple" | "orange"
+    color: "pink" | "mint" | "blue" | "purple" | "orange",
+    displayMode?: 'full' | 'compact' | 'minimal'
   } | null>(null);
   
   // Use a ref to store drag data between events
@@ -230,7 +231,7 @@ export const EventsDisplay: React.FC<EventsDisplayProps> = ({
           {/* Drop preview */}
           {dragOverDay === day.day && dropPosition && dragData && (
             <div 
-              className="absolute left-1 right-1 rounded-lg p-3 border shadow-sm pointer-events-none"
+              className="absolute left-1 right-1 rounded-lg border-2 border-solid shadow-sm pointer-events-none"
               style={{
                 top: `${dropPosition.y}px`,
                 height: `${dropPosition.duration * hourHeight/60}px`,
@@ -239,16 +240,35 @@ export const EventsDisplay: React.FC<EventsDisplayProps> = ({
                                dragData.color === 'blue' ? COLORS.eventBlue :
                                dragData.color === 'purple' ? COLORS.eventPurple : 
                                COLORS.eventOrange,
-                borderColor: COLORS.borderMedium,
-                opacity: 0.7
+                borderColor: dragData.color === 'pink' ? '#e3b3ac' :
+                            dragData.color === 'mint' ? '#bacbb7' :
+                            dragData.color === 'blue' ? '#b6cede' :
+                            dragData.color === 'purple' ? '#c9b8d9' :
+                            dragData.color === 'orange' ? '#e7c3a7' : '#d6cebf',
+                opacity: 0.9
               }}
             >
-              <div className="text-sm font-medium text-white">
-                {dragData.title}
-              </div>
-              <div className="text-xs text-white opacity-80">
-                {dragData.duration || 60} min
-              </div>
+              {dragData.displayMode === 'minimal' ? (
+                // Extremely small height - just show title with minimal or no padding
+                <div className="h-full flex items-center px-0.5 py-0 overflow-visible">
+                  <div className="text-xs font-semibold truncate w-full">{dragData.title}</div>
+                </div>
+              ) : dragData.displayMode === 'compact' ? (
+                // Compact display - include time and title
+                <div className="h-full flex flex-col justify-center px-0.5 py-0 overflow-visible">
+                  <div className="text-xs text-gray-500 truncate leading-none mb-0.5">Task</div>
+                  <div className="text-xs font-bold truncate leading-tight">{dragData.title}</div>
+                </div>
+              ) : (
+                // Regular display
+                <div className="flex flex-col h-full px-0.5">
+                  <div className="text-xs text-gray-500 truncate">Task</div>
+                  <div className="font-bold text-sm truncate">{dragData.title}</div>
+                  {dragData.duration && (
+                    <div className="text-xs text-gray-500 mt-1 line-clamp-2 overflow-hidden">{dragData.duration}m</div>
+                  )}
+                </div>
+              )}
             </div>
           )}
           

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { COLORS } from '@/constants/colors';
 import { Check } from 'lucide-react';
 import Event from '@/components/calendar/Event';
@@ -38,6 +38,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
   const dragPreviewRef = useRef<HTMLDivElement>(null);
   const [dragOffset, setDragOffset] = useState<{ x: number, y: number } | null>(null);
   const [eventColor] = useState(getRandomColor());
+  const [displayMode, setDisplayMode] = useState<'full' | 'compact' | 'minimal'>('full');
   
   // Determine priority color for the task card indicator
   const priorityColor = priority === 'high' ? COLORS.error : 
@@ -58,17 +59,34 @@ const TaskCard: React.FC<TaskCardProps> = ({
     recurringEndDate: null
   };
 
-  // Get event style for preview
-  const previewStyle = {
-    top: '0',
-    height: `${(duration || 60) * (hourHeight/60)}px`,
-    className: `absolute rounded-lg p-3 border shadow-sm`,
-    style: {
-      width: 'calc(100% - 0.5rem)',
-      marginLeft: '0.25rem',
-      backgroundColor: eventColorMap[eventColor],
-      borderColor: COLORS.borderMedium,
-      borderStyle: 'solid',
+  // Check the event height and adjust display mode accordingly
+  useEffect(() => {
+    const checkHeight = () => {
+      if (dragPreviewRef.current) {
+        const eventHeight = dragPreviewRef.current.clientHeight;
+        if (eventHeight < 40) {
+          setDisplayMode('minimal');
+        } else if (eventHeight < 50) {
+          setDisplayMode('compact');
+        } else {
+          setDisplayMode('full');
+        }
+      }
+    };
+    
+    checkHeight();
+    // Re-check if duration or hourHeight changes
+  }, [duration, hourHeight]);
+
+  // Get border color based on event color
+  const getBorderColor = () => {
+    switch (eventColor) {
+      case 'pink': return '#e3b3ac';
+      case 'mint': return '#bacbb7';
+      case 'blue': return '#b6cede';
+      case 'purple': return '#c9b8d9';
+      case 'orange': return '#e7c3a7';
+      default: return '#d6cebf'; // Default to borderMedium
     }
   };
 
@@ -85,6 +103,16 @@ const TaskCard: React.FC<TaskCardProps> = ({
   
   // Handle drag start event
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
+    // Recalculate display mode based on the event height
+    const eventHeight = (duration || 60) * (hourHeight/60);
+    if (eventHeight < 40) {
+      setDisplayMode('minimal');
+    } else if (eventHeight < 50) {
+      setDisplayMode('compact');
+    } else {
+      setDisplayMode('full');
+    }
+
     // Set the drag data with task information
     const taskData = JSON.stringify({
       id,
@@ -93,7 +121,8 @@ const TaskCard: React.FC<TaskCardProps> = ({
       duration: duration || 60,
       color: eventColor,
       description: `Task: ${title}`,
-      hourHeight // Include hourHeight in the drag data
+      hourHeight, // Include hourHeight in the drag data
+      displayMode // Include the display mode
     });
     
     e.dataTransfer.setData('application/json', taskData);
@@ -166,10 +195,37 @@ const TaskCard: React.FC<TaskCardProps> = ({
           transform: 'translate(-50%, -50%)' // Center the preview element
         }}
       >
-        <Event
-          {...previewEvent}
-          style={previewStyle}
-        />
+        <div
+          style={{
+            top: '0',
+            height: `${(duration || 60) * (hourHeight/60)}px`,
+            backgroundColor: eventColorMap[eventColor],
+            borderColor: getBorderColor(),
+            borderWidth: '2px',
+            borderStyle: 'solid',
+            padding: '0.75rem' // p-3 equivalent (0.75rem)
+          }}
+          className="absolute rounded-lg shadow-sm hover:shadow-md transition-all duration-200 border-solid w-full"
+        >
+          {displayMode === 'minimal' ? (
+        // Extremely small height - just show title with minimal or no padding
+        <div className="h-full flex items-center overflow-visible">
+          <div className="text-xs font-semibold truncate w-full">{title}</div>
+        </div>
+      ) : displayMode === 'compact' ? (
+        // Compact display - include time and title
+        <div className="h-full flex flex-col justify-center overflow-visible">
+          <div className="text-xs text-gray-500 truncate leading-none mb-0.5">00:00</div>
+          <div className="text-xs font-bold truncate leading-tight">{title}</div>
+        </div>
+      ) : (
+        // Regular display
+        <div className="flex flex-col h-full">
+          <div className="text-xs text-gray-500 truncate">00:00</div>
+          <div className="font-bold text-sm truncate">{title}</div>
+        </div>
+      )}
+        </div>
       </div>
 
       {/* Actual task card */}
