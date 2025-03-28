@@ -62,8 +62,6 @@ export const EventsDisplay: React.FC<EventsDisplayProps> = ({
                         event.color === 'blue' ? COLORS.eventBlue :
                         event.color === 'purple' ? COLORS.eventPurple : 
                         COLORS.eventOrange,
-        borderColor: event.aiGenerated ? COLORS.accent1 : COLORS.borderMedium,
-        borderStyle: event.aiGenerated ? 'dashed' : 'solid',
       }
     };
   };

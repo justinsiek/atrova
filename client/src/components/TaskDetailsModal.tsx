@@ -92,16 +92,6 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
             >
               {task.completed ? 'Completed' : 'In Progress'}
             </span>
-            
-            {/* AI scheduled badge */}
-            {task.aiScheduled && (
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
-                <svg className="w-3.5 h-3.5 mr-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M13 10V3L4 14h7v7l9-11h-7z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-                AI Scheduled
-              </span>
-            )}
           </div>
         </div>
         

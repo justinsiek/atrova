@@ -8,7 +8,6 @@ export interface EventType {
   date: number;
   color: "pink" | "mint" | "blue" | "purple" | "orange";
   description?: string;
-  aiGenerated?: boolean;
   isRecurring: boolean;
   recurringDays: string | null;
   recurringEndDate: string | null;

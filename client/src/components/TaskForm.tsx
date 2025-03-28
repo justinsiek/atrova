@@ -59,8 +59,7 @@ const TaskForm = ({ showForm, setShowForm, onAddTask, taskToEdit, onUpdateTask }
     if (taskToEdit && onUpdateTask) {
       onUpdateTask(taskToEdit.id, {
         ...taskData,
-        completed: taskToEdit.completed,
-        aiScheduled: taskToEdit.aiScheduled
+        completed: taskToEdit.completed
       })
     } else {
       onAddTask(taskData)

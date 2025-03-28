@@ -79,7 +79,7 @@ export default function Calendar({
     if (scrollContainer) {
       const currentTimePosition = getCurrentTimePosition()
       const containerHeight = scrollContainer.clientHeight
-      const scrollTo = currentTimePosition - (containerHeight / 2)
+      const scrollTo = currentTimePosition - (containerHeight / 4)
       scrollContainer.scrollTo({
         top: scrollTo,
         behavior: 'smooth'
@@ -172,7 +172,6 @@ export default function Calendar({
         ...newEventData,
         date: newEventData.date || calendarDays[0].day,
         color: newEventData.color || getRandomColor(),
-        aiGenerated: false,
         isRecurring: newEventData.isRecurring || false,
         recurringDays: newEventData.recurringDays || null,
         recurringEndDate: newEventData.recurringEndDate || null

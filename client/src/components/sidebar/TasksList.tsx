@@ -79,7 +79,6 @@ const TasksList: React.FC<TasksListProps> = ({
                 duration={task.duration}
                 getRandomColor={getRandomColor}
                 onTaskClick={handleTaskClick}  // Add the click handler
-                aiScheduled={task.aiScheduled}
                 hourHeight={hourHeight}
               />
             ))}
