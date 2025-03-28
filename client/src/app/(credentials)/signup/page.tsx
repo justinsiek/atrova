@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import { Domine } from "next/font/google"
 import Link from 'next/link'
 import { COLORS } from "@/constants/colors"
-import { Mail, Lock, User, ChevronRight, Sparkles } from 'lucide-react'
+import { Mail, Lock, User, ChevronRight, Sparkles, Phone } from 'lucide-react'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -16,9 +16,24 @@ const domine = Domine({
 const SignupPage = () => {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
+  const [phoneNumber, setPhoneNumber] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [agreeToTerms, setAgreeToTerms] = useState(false)
+
+  const formatPhoneNumber = (value: string) => {
+    // Remove all non-digit characters
+    const phoneDigits = value.replace(/\D/g, '');
+    
+    // Apply formatting based on input length
+    if (phoneDigits.length <= 3) {
+      return phoneDigits;
+    } else if (phoneDigits.length <= 6) {
+      return `(${phoneDigits.slice(0, 3)}) ${phoneDigits.slice(3)}`;
+    } else {
+      return `(${phoneDigits.slice(0, 3)}) ${phoneDigits.slice(3, 6)}-${phoneDigits.slice(6, 10)}`;
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -291,7 +306,33 @@ const SignupPage = () => {
                     />
                   </div>
                 </div>
-
+                <div className="mb-4">
+                  <label 
+                    htmlFor="phoneNumber" 
+                    className="block text-sm font-medium mb-2"
+                    style={{ color: COLORS.darkBrown }}
+                  >
+                    Phone Number
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <Phone size={18} color={COLORS.lightBrown} />
+                    </div>
+                    <input
+                      id="phoneNumber"
+                      type="tel"
+                      value={phoneNumber}
+                      onChange={(e) => setPhoneNumber(formatPhoneNumber(e.target.value))}
+                      className="pl-10 block w-full border rounded-lg p-3 bg-white focus:outline-none transition-colors duration-200"
+                      style={{ 
+                        borderColor: COLORS.borderMedium,
+                        color: COLORS.darkBrown
+                      }}
+                      placeholder="(555) 555-5555"
+                      required
+                    />
+                  </div>
+                </div>
                 <div className="mb-4">
                   <label 
                     htmlFor="password" 
