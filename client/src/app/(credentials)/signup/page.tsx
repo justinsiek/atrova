@@ -49,6 +49,13 @@ const SignupPage = () => {
       return;
     }
 
+    // Validate phone number
+    const cleanPhoneNumber = phoneNumber.replace(/\D/g, '');
+    if (!cleanPhoneNumber || cleanPhoneNumber.length < 10) {
+      alert("Please enter a valid phone number");
+      return;
+    }
+
     try {
       const response = await fetch(`${API_URL}/auth/signup`, {
         method: 'POST',
@@ -59,6 +66,7 @@ const SignupPage = () => {
           email,
           password,
           name,
+          phone_number: cleanPhoneNumber // Add phone number to request
         }),
       });
 
