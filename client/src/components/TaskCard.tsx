@@ -50,7 +50,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
     title,
     startTime: '00:00',
     endTime: '01:00',
-    date: 1,
+    timestamp: new Date().setHours(12, 0, 0, 0),
     color: eventColor,
     description: '',
     isRecurring: false,
