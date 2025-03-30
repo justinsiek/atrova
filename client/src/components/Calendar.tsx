@@ -156,21 +156,29 @@ export default function Calendar({
     title: string;
     startTime: string;
     endTime: string;
-    date?: number;
+    timestamp?: number;
     color?: "pink" | "mint" | "blue" | "purple" | "orange";
     description?: string;
     isRecurring?: boolean;
     recurringDays?: string;
-    recurringEndDate?: string;
+    recurringEndDate?: string | null;
   }) => {
     setIsLoading(true);
     setError(null);
     try {
       console.log('handleAddEvent called with data:', newEventData);
       
+      // Generate timestamp for the selected day if not provided
+      const defaultTimestamp = new Date(
+        calendarDays[0].year, 
+        calendarDays[0].month, 
+        calendarDays[0].day,
+        12, 0, 0  // Add noon time to avoid timezone boundary issues
+      ).getTime();
+      
       const newEventObj = {
         ...newEventData,
-        date: newEventData.date || calendarDays[0].day,
+        timestamp: newEventData.timestamp || defaultTimestamp,
         color: newEventData.color || getRandomColor(),
         isRecurring: newEventData.isRecurring || false,
         recurringDays: newEventData.recurringDays || null,
@@ -359,7 +367,7 @@ export default function Calendar({
                     title: newEvent.title,
                     startTime: newEvent.startTime,
                     endTime: newEvent.endTime,
-                    date: newEvent.date,
+                    timestamp: newEvent.timestamp,
                     color: newEvent.color,
                     description: newEvent.description,
                     isRecurring: newEvent.isRecurring,

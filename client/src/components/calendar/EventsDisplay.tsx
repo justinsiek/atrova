@@ -68,7 +68,17 @@ export const EventsDisplay: React.FC<EventsDisplayProps> = ({
 
   const shouldShowEvent = (event: EventType, day: Day) => {
     if (!event.isRecurring) {
-      return event.date === day.day;
+      // Create a date object for the calendar day being rendered
+      // Use noon time to avoid timezone boundary issues
+      const dayDate = new Date(day.year, day.month, day.day, 12, 0, 0);
+      
+      // Create a date from the event timestamp
+      const eventDate = new Date(event.timestamp);
+      
+      // Compare only year/month/day
+      return eventDate.getFullYear() === dayDate.getFullYear() &&
+             eventDate.getMonth() === dayDate.getMonth() &&
+             eventDate.getDate() === dayDate.getDate();
     }
 
     // For recurring events
@@ -145,7 +155,7 @@ export const EventsDisplay: React.FC<EventsDisplayProps> = ({
         title: taskData.title,
         startTime,
         endTime,
-        date: day.day,
+        timestamp: new Date(day.year, day.month, day.day, 12, 0, 0).getTime(),
         color: taskData.color || 'blue',
         description: undefined,
         isRecurring: false,

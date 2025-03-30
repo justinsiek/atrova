@@ -5,7 +5,7 @@ export interface EventType {
   title: string;
   startTime: string;
   endTime: string;
-  date: number;
+  timestamp: number; // Unix timestamp in milliseconds
   color: "pink" | "mint" | "blue" | "purple" | "orange";
   description?: string;
   isRecurring: boolean;

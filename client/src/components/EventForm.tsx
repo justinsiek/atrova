@@ -6,6 +6,8 @@ interface CalendarDay {
   day: number
   weekday: string
   isToday: boolean
+  month: number
+  year: number
 }
 
 interface EventFormProps {
@@ -16,12 +18,12 @@ interface EventFormProps {
     title: string
     startTime: string
     endTime: string
-    date?: number
+    timestamp?: number
     color?: "pink" | "mint" | "blue" | "purple" | "orange"
     description?: string
     isRecurring?: boolean
     recurringDays?: string
-    recurringEndDate?: string
+    recurringEndDate?: string | null
   }) => void
   eventToEdit?: EventType | null
   onUpdateEvent?: (id: string, event: Omit<EventType, 'id'>) => void
@@ -29,13 +31,22 @@ interface EventFormProps {
 
 const WEEKDAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
+// Helper function to format a Date object to YYYY-MM-DD format for date inputs
+const formatDateForInput = (dateObj: Date | null): string => {
+  if (!dateObj) return ""
+  // Format as YYYY-MM-DD for date input
+  const year = dateObj.getFullYear()
+  const month = String(dateObj.getMonth() + 1).padStart(2, '0') // +1 because months are 0-indexed
+  const day = String(dateObj.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
 export default function EventForm({ showForm, setShowForm, calendarDays, onAddEvent, eventToEdit, onUpdateEvent }: EventFormProps) {
   const [newTitle, setNewTitle] = useState("")
   const [newStartTime, setNewStartTime] = useState("")
   const [newDuration, setNewDuration] = useState("")
-  const [newDate, setNewDate] = useState(
-    calendarDays.find((day) => day.isToday)?.day.toString() || 
-    calendarDays[0].day.toString()
+  const [selectedDate, setSelectedDate] = useState<string>(
+    formatDateForInput(new Date())
   )
   const [newDescription, setNewDescription] = useState("")
   const [selectedColor, setSelectedColor] = useState<"pink" | "mint" | "blue" | "purple" | "orange">("blue")
@@ -50,12 +61,17 @@ export default function EventForm({ showForm, setShowForm, calendarDays, onAddEv
       setNewTitle(eventToEdit.title || "")
       setNewStartTime(eventToEdit.startTime || "")
       setNewDuration(calculateDuration(eventToEdit.startTime, eventToEdit.endTime))
-      setNewDate(eventToEdit.date?.toString() || "")
+      
+      // Convert timestamp to date string for input
+      if (eventToEdit.timestamp) {
+        setSelectedDate(formatDateForInput(new Date(eventToEdit.timestamp)))
+      }
+      
       setNewDescription(eventToEdit.description || "")
       setSelectedColor(eventToEdit.color || "blue")
       setIsRecurring(eventToEdit.isRecurring || false)
       setSelectedDays(getBooleanDays(eventToEdit.recurringDays))
-      setRecurringEndDate(formatDateForInput(eventToEdit.recurringEndDate))
+      setRecurringEndDate(formatDateForInput(eventToEdit.recurringEndDate ? new Date(eventToEdit.recurringEndDate) : null))
     } else {
       resetForm()
     }
@@ -76,17 +92,6 @@ export default function EventForm({ showForm, setShowForm, calendarDays, onAddEv
     const endMinutes = endHour * 60 + endMinute
     return (endMinutes - startMinutes).toString()
   }
-  
-  const formatDateForInput = (dateString: string | null): string => {
-    if (!dateString) return ""
-    // Ensure the date is in YYYY-MM-DD format expected by date input
-    try {
-      const date = new Date(dateString)
-      return date.toISOString().split('T')[0]
-    } catch (e) {
-      return ""
-    }
-  }
 
   const getBooleanDays = (binaryDays?: string | null): boolean[] => {
     if (!binaryDays) return Array(7).fill(false)
@@ -96,10 +101,14 @@ export default function EventForm({ showForm, setShowForm, calendarDays, onAddEv
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const durationMinutes = parseInt(newDuration)
-    if (!newTitle || !newStartTime || isNaN(durationMinutes)) {
+    if (!newTitle || !newStartTime || isNaN(durationMinutes) || !selectedDate) {
       return
     }
     const newEndTime = calculateEndTime(newStartTime, durationMinutes)
+    
+    // Parse the selected date
+    const dateObj = new Date(selectedDate + "T12:00:00") // Use noon time to avoid timezone issues
+    const timestamp = dateObj.getTime()
     
     if (eventToEdit && onUpdateEvent) {
       // Update existing event
@@ -107,12 +116,14 @@ export default function EventForm({ showForm, setShowForm, calendarDays, onAddEv
         title: newTitle,
         startTime: newStartTime,
         endTime: newEndTime,
-        date: isRecurring ? eventToEdit.date : parseInt(newDate), // Keep original date for recurring events
+        timestamp: isRecurring ? eventToEdit.timestamp : timestamp, // Keep original date for recurring events
         description: newDescription || undefined,
         color: selectedColor,
         isRecurring,
         recurringDays: isRecurring ? getBinaryDays() : null,
-        recurringEndDate: isRecurring ? recurringEndDate || null : null
+        recurringEndDate: isRecurring && recurringEndDate 
+          ? new Date(recurringEndDate + "T12:00:00").getTime().toString() 
+          : null
       });
     } else {
       // Create new event
@@ -120,12 +131,14 @@ export default function EventForm({ showForm, setShowForm, calendarDays, onAddEv
         title: newTitle,
         startTime: newStartTime,
         endTime: newEndTime,
-        date: parseInt(newDate),
+        timestamp,
         description: newDescription || undefined,
         color: selectedColor,
         isRecurring,
         recurringDays: isRecurring ? getBinaryDays() : undefined,
-        recurringEndDate: isRecurring ? recurringEndDate || undefined : undefined
+        recurringEndDate: isRecurring && recurringEndDate 
+          ? new Date(recurringEndDate + "T12:00:00").getTime().toString() 
+          : undefined
       });
     }
 
@@ -143,7 +156,7 @@ export default function EventForm({ showForm, setShowForm, calendarDays, onAddEv
     setIsRecurring(false)
     setSelectedDays(Array(7).fill(false))
     setRecurringEndDate("")
-    setNewDate(calendarDays.find((day) => day.isToday)?.day.toString() || calendarDays[0].day.toString())
+    setSelectedDate(formatDateForInput(new Date()))
   }
 
   const formTitle = eventToEdit ? "Edit Event" : "Add Event"
@@ -202,39 +215,34 @@ export default function EventForm({ showForm, setShowForm, calendarDays, onAddEv
             {!isRecurring ? (
               <div>
                 <label htmlFor="date" className="block text-sm font-medium text-[#2C2C2C] mb-2">
-                  Day
+                  Date
                 </label>
-                <select
+                <input
                   id="date"
-                  value={newDate}
-                  onChange={(e) => setNewDate(e.target.value)}
+                  type="date"
+                  value={selectedDate}
+                  onChange={(e) => setSelectedDate(e.target.value)}
                   className="mt-1 block w-full border border-[#E2DFD8] rounded-lg p-2.5 bg-white focus:outline-none focus:border-[#2C2C2C] transition-colors duration-200"
-                >
-                  {calendarDays.map((day) => (
-                    <option key={day.day} value={day.day}>
-                      {day.weekday} {day.day}
-                    </option>
-                  ))}
-                </select>
+                />
               </div>
             ) : (
-              <div className="col-span-3">
+              <div>
                 <label className="block text-sm font-medium text-[#2C2C2C] mb-2">
-                  Recurring Days
+                  Days
                 </label>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-1">
                   {WEEKDAYS.map((day, index) => (
                     <button
                       key={day}
                       type="button"
                       onClick={() => handleDayToggle(index)}
-                      className={`px-2 py-1 rounded-md text-sm ${
+                      className={`w-8 h-8 text-xs rounded-full flex items-center justify-center transition-colors ${
                         selectedDays[index]
                           ? "bg-[#2C2C2C] text-white"
-                          : "bg-[#E2DFD8] text-[#2C2C2C]"
+                          : "bg-white text-[#2C2C2C] border border-[#E2DFD8]"
                       }`}
                     >
-                      {day.slice(0, 3)}
+                      {day.substring(0, 1)}
                     </button>
                   ))}
                 </div>
