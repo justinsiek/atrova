@@ -29,6 +29,39 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
   const [userName, setUserName] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
 
+  const refreshToken = async (): Promise<boolean> => {
+    try {
+      const refreshToken = localStorage.getItem('refreshToken');
+      
+      if (!refreshToken) {
+        return false;
+      }
+      
+      const API_URL = process.env.NEXT_PUBLIC_API_URL;
+      const response = await fetch(`${API_URL}/auth/refresh`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ refresh_token: refreshToken }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to refresh token');
+      }
+      
+      const data = await response.json();
+      
+      localStorage.setItem('accessToken', data.user.access_token);
+      localStorage.setItem('refreshToken', data.user.refresh_token);
+      
+      return true;
+    } catch (error) {
+      console.error('Token refresh error:', error);
+      return false;
+    }
+  };
+
   useEffect(() => {
     // Check if user is logged in on mount
     const checkAuth = async () => {
@@ -54,7 +87,16 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
     };
 
     checkAuth();
-  }, []);
+    
+    // Set up token refresh interval
+    const refreshInterval = setInterval(async () => {
+      if (isAuthenticated) {
+        await refreshToken();
+      }
+    }, 7 * 24 * 60 * 60 * 1000); // Refresh every 7 days
+    
+    return () => clearInterval(refreshInterval);
+  }, [isAuthenticated]);
 
   const login = (accessToken: string, refreshToken: string, userId: string, userName: string, userEmail: string) => {
     localStorage.setItem('accessToken', accessToken);
