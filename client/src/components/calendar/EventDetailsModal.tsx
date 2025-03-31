@@ -91,6 +91,9 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
               <div className="flex flex-col">
                 <span className="text-sm text-gray-500 dark:text-gray-400">Repeats on</span>
                 <span className="font-medium">{formatRecurringDays(event.recurringDays!)}</span>
+                <span className="text-sm text-gray-500">
+                  Starting: {new Date(event.timestamp).toLocaleDateString()}
+                </span>
                 {event.recurringEndDate && (
                   <span className="text-sm text-gray-500">
                     Until: {new Date(event.recurringEndDate).toLocaleDateString()}

@@ -116,7 +116,7 @@ export default function EventForm({ showForm, setShowForm, calendarDays, onAddEv
         title: newTitle,
         startTime: newStartTime,
         endTime: newEndTime,
-        timestamp: isRecurring ? eventToEdit.timestamp : timestamp, // Keep original date for recurring events
+        timestamp: timestamp,
         description: newDescription || undefined,
         color: selectedColor,
         isRecurring,
@@ -212,23 +212,23 @@ export default function EventForm({ showForm, setShowForm, calendarDays, onAddEv
             />
           </div>
           <div className="grid grid-cols-3 gap-4 mb-5">
-            {!isRecurring ? (
-              <div>
-                <label htmlFor="date" className="block text-sm font-medium text-[#2C2C2C] mb-2">
-                  Date
-                </label>
-                <input
-                  id="date"
-                  type="date"
-                  value={selectedDate}
-                  onChange={(e) => setSelectedDate(e.target.value)}
-                  className="mt-1 block w-full border border-[#E2DFD8] rounded-lg p-2.5 bg-white focus:outline-none focus:border-[#2C2C2C] transition-colors duration-200"
-                />
-              </div>
-            ) : (
+            <div>
+              <label htmlFor="date" className="block text-sm font-medium text-[#2C2C2C] mb-2">
+                {isRecurring ? "Start Date" : "Date"}
+              </label>
+              <input
+                id="date"
+                type="date"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                className="mt-1 block w-full border border-[#E2DFD8] rounded-lg p-2.5 bg-white focus:outline-none focus:border-[#2C2C2C] transition-colors duration-200"
+              />
+            </div>
+            
+            {isRecurring && (
               <div>
                 <label className="block text-sm font-medium text-[#2C2C2C] mb-2">
-                  Days
+                  Repeat on
                 </label>
                 <div className="flex flex-wrap gap-1">
                   {WEEKDAYS.map((day, index) => (

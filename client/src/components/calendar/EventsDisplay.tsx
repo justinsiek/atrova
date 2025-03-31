@@ -88,6 +88,12 @@ export const EventsDisplay: React.FC<EventsDisplayProps> = ({
     if (event.recurringEndDate && dayDate > new Date(event.recurringEndDate)) {
       return false;
     }
+    
+    // Check if we're before the start date
+    const startDate = new Date(event.timestamp);
+    if (dayDate < startDate) {
+      return false;
+    }
 
     // Get day of week (0 = Monday, 6 = Sunday)
     const weekday = dayDate.getDay();
