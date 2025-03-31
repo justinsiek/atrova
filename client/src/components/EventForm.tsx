@@ -211,43 +211,32 @@ export default function EventForm({ showForm, setShowForm, calendarDays, onAddEv
               className="mt-1 block w-full border border-[#E2DFD8] rounded-lg p-2.5 bg-white focus:outline-none focus:border-[#2C2C2C] transition-colors duration-200"
             />
           </div>
-          <div className="grid grid-cols-3 gap-4 mb-5">
-            <div>
-              <label htmlFor="date" className="block text-sm font-medium text-[#2C2C2C] mb-2">
-                {isRecurring ? "Start Date" : "Date"}
+          
+          {isRecurring && (
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-[#2C2C2C] mb-2">
+                Repeat on
               </label>
-              <input
-                id="date"
-                type="date"
-                value={selectedDate}
-                onChange={(e) => setSelectedDate(e.target.value)}
-                className="mt-1 block w-full border border-[#E2DFD8] rounded-lg p-2.5 bg-white focus:outline-none focus:border-[#2C2C2C] transition-colors duration-200"
-              />
-            </div>
-            
-            {isRecurring && (
-              <div>
-                <label className="block text-sm font-medium text-[#2C2C2C] mb-2">
-                  Repeat on
-                </label>
-                <div className="flex flex-wrap gap-1">
-                  {WEEKDAYS.map((day, index) => (
-                    <button
-                      key={day}
-                      type="button"
-                      onClick={() => handleDayToggle(index)}
-                      className={`w-8 h-8 text-xs rounded-full flex items-center justify-center transition-colors ${
-                        selectedDays[index]
-                          ? "bg-[#2C2C2C] text-white"
-                          : "bg-white text-[#2C2C2C] border border-[#E2DFD8]"
-                      }`}
-                    >
-                      {day.substring(0, 1)}
-                    </button>
-                  ))}
-                </div>
+              <div className="flex justify-center gap-1 mb-4">
+                {WEEKDAYS.map((day, index) => (
+                  <button
+                    key={day}
+                    type="button"
+                    onClick={() => handleDayToggle(index)}
+                    className={`px-4 py-0.5 text-xs rounded flex items-center justify-center transition-colors ${
+                      selectedDays[index]
+                        ? "bg-[#2C2C2C] text-white border border-[#2C2C2C]"
+                        : "bg-white text-[#2C2C2C] border border-[#E2DFD8]"
+                    }`}
+                  >
+                    {day.substring(0, 3)}
+                  </button>
+                ))}
               </div>
-            )}
+            </div>
+          )}
+
+          <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
               <label htmlFor="startTime" className="block text-sm font-medium text-[#2C2C2C] mb-2">
                 Start Time
@@ -273,20 +262,37 @@ export default function EventForm({ showForm, setShowForm, calendarDays, onAddEv
               />
             </div>
           </div>
-          {isRecurring && (
-            <div className="mb-4">
-              <label htmlFor="endDate" className="block text-sm font-medium text-[#2C2C2C] mb-2">
-                End Date (Optional)
+
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <div>
+              <label htmlFor="date" className="block text-sm font-medium text-[#2C2C2C] mb-2">
+                {isRecurring ? "Start Date" : "Date"}
               </label>
               <input
+                id="date"
                 type="date"
-                id="endDate"
-                value={recurringEndDate}
-                onChange={(e) => setRecurringEndDate(e.target.value)}
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
                 className="mt-1 block w-full border border-[#E2DFD8] rounded-lg p-2.5 bg-white focus:outline-none focus:border-[#2C2C2C] transition-colors duration-200"
               />
             </div>
-          )}
+            
+            {isRecurring && (
+              <div>
+                <label htmlFor="endDate" className="block text-sm font-medium text-[#2C2C2C] mb-2">
+                  End Date (Optional)
+                </label>
+                <input
+                  type="date"
+                  id="endDate"
+                  value={recurringEndDate}
+                  onChange={(e) => setRecurringEndDate(e.target.value)}
+                  className="mt-1 block w-full border border-[#E2DFD8] rounded-lg p-2.5 bg-white focus:outline-none focus:border-[#2C2C2C] transition-colors duration-200"
+                />
+              </div>
+            )}
+          </div>
+          
           <div className="mb-4">
             <label htmlFor="description" className="block text-sm font-medium text-[#2C2C2C] mb-2">
               Description (Optional)
