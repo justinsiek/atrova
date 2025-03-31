@@ -81,17 +81,34 @@ export const EventsDisplay: React.FC<EventsDisplayProps> = ({
              eventDate.getDate() === dayDate.getDate();
     }
 
+    // Helper function to check if date1 is before date2 (ignoring time)
+    const isDateBefore = (date1: Date, date2: Date): boolean => {
+      return date1.getFullYear() < date2.getFullYear() || 
+            (date1.getFullYear() === date2.getFullYear() && date1.getMonth() < date2.getMonth()) ||
+            (date1.getFullYear() === date2.getFullYear() && date1.getMonth() === date2.getMonth() && date1.getDate() < date2.getDate());
+    };
+    
+    // Helper function to check if date1 is after date2 (ignoring time)
+    const isDateAfter = (date1: Date, date2: Date): boolean => {
+      return date1.getFullYear() > date2.getFullYear() || 
+            (date1.getFullYear() === date2.getFullYear() && date1.getMonth() > date2.getMonth()) ||
+            (date1.getFullYear() === date2.getFullYear() && date1.getMonth() === date2.getMonth() && date1.getDate() > date2.getDate());
+    };
+
     // For recurring events
     const dayDate = new Date(day.year, day.month, day.day);
     
     // Check if event has ended
-    if (event.recurringEndDate && dayDate > new Date(event.recurringEndDate)) {
-      return false;
+    if (event.recurringEndDate) {
+      const endDate = new Date(event.recurringEndDate);
+      if (isDateAfter(dayDate, endDate)) {
+        return false;
+      }
     }
     
     // Check if we're before the start date
     const startDate = new Date(event.timestamp);
-    if (dayDate < startDate) {
+    if (isDateBefore(dayDate, startDate)) {
       return false;
     }
 
