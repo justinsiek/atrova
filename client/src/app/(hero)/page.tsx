@@ -73,11 +73,8 @@ const Hero = () => {
           </span>
         </div>
         <nav className="hidden md:flex space-x-8 items-center">
-          <a href="#features" className="text-sm font-medium hover:underline" style={{ color: COLORS.mediumBrown }}>
-            Features
-          </a>
-          <a href="#about" className="text-sm font-medium hover:underline" style={{ color: COLORS.mediumBrown }}>
-            About
+          <a href="/optin" className="text-sm font-medium hover:underline" style={{ color: COLORS.mediumBrown }}>
+            Opt In Policy
           </a>
           <Link 
             href="/login" 
