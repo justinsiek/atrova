@@ -17,7 +17,7 @@ const Hero = () => {
     >
       {/* Background Decorative Elements */}
       <div 
-        className="absolute top-0 right-0 w-96 h-96 rounded-full opacity-20 border-2 border-solid"
+        className="absolute top-0 right-0 w-[600px] h-[600px] rounded-full opacity-30 border-2 border-solid"
         style={{ 
           backgroundColor: COLORS.eventPink, 
           transform: "translate(30%, -30%)",
@@ -35,7 +35,7 @@ const Hero = () => {
       
       {/* Decorative Calendar Elements */}
       <div 
-        className="absolute top-1/3 right-32 h-48 w-48 rounded-lg rotate-12 shadow-md z-0 border-2 border-solid hidden lg:block"
+        className="absolute top-[40%] right-32 h-48 w-48 rounded-lg rotate-12 shadow-md z-0 border-2 border-solid hidden lg:block"
         style={{ 
           backgroundColor: COLORS.eventPink,
           borderColor: "#e3b3ac"
@@ -49,7 +49,7 @@ const Hero = () => {
         }}
       />
       <div 
-        className="absolute top-80 left-28 h-40 w-40 rounded-lg -rotate-12 shadow-sm z-0 border-2 border-solid hidden lg:block"
+        className="absolute top-[21%] left-12 h-40 w-40 rounded-lg -rotate-12 shadow-sm z-0 border-2 border-solid hidden lg:block"
         style={{ 
           backgroundColor: COLORS.eventBlue, 
           opacity: 0.8,
@@ -97,9 +97,9 @@ const Hero = () => {
       </header>
       
       {/* Hero Section */}
-      <main className="flex-1 flex flex-col-reverse lg:flex-row items-center justify-center px-6 py-12 lg:py-0 max-w-7xl mx-auto z-10">
+      <main className="flex-1 flex flex-col-reverse lg:flex-row lg:items-start justify-center px-6 py-12 lg:py-0 z-10 ml-16 mr-6">
         {/* Left column (copy) */}
-        <div className="lg:w-1/2 pt-12 lg:pt-0 text-center lg:text-left">
+        <div className="lg:w-1/2 pt-12 lg:pt-0 text-center lg:text-left mt-16">
           <h1 
             className={`text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6 ${domine.className}`}
             style={{ color: COLORS.darkBrown }}
@@ -132,29 +132,17 @@ const Hero = () => {
         </div>
         
         {/* Right column (calendar preview) */}
-        <div className="lg:w-1/2 mb-12 lg:mb-0">
-          <div 
-            className="relative mx-auto lg:ml-auto lg:mr-0 max-w-md xl:max-w-lg p-4 rounded-lg shadow-xl"
-            style={{ backgroundColor: COLORS.paperWhite, border: `1px solid ${COLORS.borderLight}` }}
-          >
-            <div className="absolute -top-3 -right-3 flex items-center justify-center h-12 w-12 rounded-full shadow-md z-20"
-                 style={{ backgroundColor: COLORS.accent1 }}>
-              <Sparkles size={20} color="white" />
-            </div>
-            {/* 
+        <div className="lg:w-3/5 mb-12 lg:mb-0 lg:mt-4">
+          
+            
             <img 
-              src="/calendar-preview.png" 
+              src="/laptop.png" 
               alt="Atrova Calendar Preview" 
-              className="w-full rounded border shadow-inner"
+              className="w-full"
               style={{ borderColor: COLORS.borderLight }}
-              // If you don't have an image yet, remove the image and use a placeholder div:
-              // className="w-full h-[400px] bg-gray-100 rounded flex items-center justify-center"
             />
-            */}
-            <div className="w-full h-[350px] bg-gray-100 rounded flex items-center justify-center">
-              calander image
-            </div>
-          </div>
+            
+            
         </div>
       </main>
       
